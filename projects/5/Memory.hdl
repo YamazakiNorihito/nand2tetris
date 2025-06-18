@@ -1,0 +1,91 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/5/Memory.hdl
+/**
+ * The complete address space of the Hack computer's memory,
+ * including RAM and memory-mapped I/O. 
+ * The chip facilitates read and write operations, as follows:
+ *     Read:  out(t) = Memory[address(t)](t)
+ *     Write: if load(t-1) then Memory[address(t-1)](t) = in(t-1)
+ * In words: the chip always outputs the value stored at the memory 
+ * location specified by address. If load=1, the in value is loaded 
+ * into the memory location specified by address. This value becomes 
+ * available through the out output from the next time step onward.
+ * Address space rules:
+ * Only the upper 16K+8K+1 words of the Memory chip are used. 
+ * Access to address>0x6000 is invalid and reads 0. Access to any address
+ * in the range 0x4000-0x5FFF results in accessing the screen memory 
+ * map. Access to address 0x6000 results in accessing the keyboard 
+ * memory map. The behavior in these addresses is described in the Screen
+ * and Keyboard chip specifications given in the lectures and the book.
+ */
+CHIP Memory {
+    IN in[16], load, address[15];
+    OUT out[16];
+
+    PARTS:
+
+    // Address range overview (decimal and binary):
+    // RAM      : 0 - 16383   (00000000000000 to 01111111111111)
+    // Screen   : 16384 - 24575 (10000000000000 to 10111111111111)
+    // Keyboard : 24576        (11000000000000)
+    // ------------------
+    // Hack仕様では、address[13..14]の値によりRAM/Screen/Keyboardの範囲が識別されるため、それを元に各領域のフラグを生成
+    // ------------------
+    DMux4Way(
+        in=true,
+        sel=address[13..14],
+        a=isRamLowerRange,
+        b=isRamUpperRange,
+        c=isScreenAddressRange,
+        d=isKeyboardAddressRange
+    );
+
+    // RAM
+    Or(a=isRamLowerRange, b=isRamUpperRange, out=isRamAddressRange);
+
+    // Screen
+    //      isScreenAddressRange
+
+    // Keyboard
+    //  Hack仕様ではKeyboardの有効アドレスは唯一 0x6000 (110000000000000)。
+    //  HDLではアドレスの完全一致チェックが困難なため、[0..12]=0 かつ [13..14]=11 で代替的に判定。
+    Or8Way(in=address[0..7], out=areKeyboardLowBitsZero);
+    Or8Way(in[0..5]=address[8..13], out=areKeyboardMidBitsZero);
+
+    // アドレスが 0x6000 (110000000000000) に一致する場合を検出する
+    Xor(a=isKeyboardAddressRange, b=areKeyboardMidBitsZero, out=isKeyboardAddress);
+
+    // Check for invalid address
+    Or(a=isRamAddressRange, b=isScreenAddressRange, out=partialValidAddress);
+    Or(a=partialValidAddress, b=isKeyboardAddress, out=isValidMemoryAddress);
+    Not(in=isValidMemoryAddress, out=isInvalidMemoryAddress);
+
+    // ------------------
+    // Data write or read from Register 
+    // ------------------
+    // RAM
+    And(a=isRamAddressRange, b=load, out=shouldLoadToRam);
+    RAM16K(in=in, load=shouldLoadToRam, address=address[0..13], out=ramOutput);
+
+    // Screen
+    And(a=isScreenAddressRange, b=load, out=shouldLoadToScreen);
+    Screen(in=in, load=shouldLoadToScreen, address=address[0..12], out=screenOutput);
+    
+    // Keyboard
+    Keyboard(out=keyboardOutput);
+
+    // ------------------
+    // 各メモリ領域の出力から、アドレスに応じた最終的な出力を選択
+    // ------------------
+    Mux4Way16(
+        a=ramOutput,
+        b=ramOutput,
+        c=screenOutput,
+        d=keyboardOutput,
+        sel=address[13..14],
+        out=selectedOutput
+    );
+    Mux16(a=false, b=selectedOutput, sel=isValidMemoryAddress, out=out);
+}

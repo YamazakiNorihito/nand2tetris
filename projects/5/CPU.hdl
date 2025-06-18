@@ -1,0 +1,113 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/5/CPU.hdl
+/**
+ * The Hack Central Processing unit (CPU).
+ * Parses the binary code in the instruction input and executes it according to the
+ * Hack machine language specification. In the case of a C-instruction, computes the
+ * function specified by the instruction. If the instruction specifies to read a memory
+ * value, the inM input is expected to contain this value. If the instruction specifies
+ * to write a value to the memory, sets the outM output to this value, sets the addressM
+ * output to the target address, and asserts the writeM output (when writeM = 0, any
+ * value may appear in outM).
+ * If the reset input is 0, computes the address of the next instruction and sets the
+ * pc output to that value. If the reset input is 1, sets pc to 0.
+ * Note: The outM and writeM outputs are combinational: they are affected by the
+ * instruction's execution during the current cycle. The addressM and pc outputs are
+ * clocked: although they are affected by the instruction's execution, they commit to
+ * their new values only in the next cycle.
+ */
+CHIP CPU {
+
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to re-start the current
+                         // program (reset==1) or continue executing
+                         // the current program (reset==0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write to M? 
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // address of next instruction
+
+    PARTS:
+
+    // instruction
+    /*
+        C命令:111accccccdddjjj
+        instruction[15] = 1  // C命令の識別ビット（固定値 1）
+        instruction[14] = 1  // 常に1（固定値）
+        instruction[13] = 1  // 常に1（固定値）
+        instruction[12] // aビット：ALUの入力先（0=A、1=M）
+        instruction[11] // c1：ALU制御ビット
+        instruction[10] // c2
+        instruction[9]  // c3
+        instruction[8]  // c4
+        instruction[7]  // c5
+        instruction[6]  // c6
+        instruction[5]  // d1：出力先（Aレジスタ）
+        instruction[4]  // d2：出力先（Dレジスタ）
+        instruction[3]  // d3：出力先（Mアドレス）
+        instruction[2]  // j1：ジャンプ条件
+        instruction[1]  // j2
+        instruction[0]  // j3
+
+    */
+    // 命令種別判定
+    // A命令判定
+    Not(in=instruction[15], out=instructionIsA);
+
+    // ARegister保存
+    And(a=instruction[15] , b=instruction[5] , out=controlLoadAFromC);
+
+    // Does The ARegister load?
+    Or(a=instructionIsA , b=controlLoadAFromC , out=aRegisterLoad );
+    // Which ARegister Value from A or C
+    Mux16(a=instruction, b=aluOut, sel=controlLoadAFromC, out=aRegisterInputC);
+    Mux16(a=aRegisterInputC, b=instruction, sel=instructionIsA, out=aRegisterInputFinal);
+    ARegister(in=aRegisterInputFinal, load=aRegisterLoad, out[0..14]=addressM, out=aRegisterOut);
+
+    And(a=instruction[15], b=instruction[4], out=controlLoadD);
+    DRegister(in=aluOut, load=controlLoadD, out=dRegisterOut);
+    
+    // outM
+    Mux16(a=aRegisterOut, b=inM, sel=instruction[12], out=aluInputY);
+    ALU(x=dRegisterOut, y=aluInputY, zx=instruction[11], nx=instruction[10],
+        zy=instruction[9], ny=instruction[8], f=instruction[7],
+        no=instruction[6], out=aluOut, zr=aluOutIsZero, ng=aluOutIsNegative);
+    Or16(a=false, b=aluOut, out=outM);
+    
+    // writeM
+    And(a= instruction[15], b= instruction[3], out= writeM);
+
+    // ジャンプ条件
+    /*
+        ジャンプビットの意味（instruction[2:0]/j1,j2,j3）
+        | j1 | j2 | j3 | 意味              | 条件           |
+        |----|----|----|------------------|----------------|
+        | 0  | 0  | 0  | ジャンプしない      | なし           |
+        | 0  | 0  | 1  | JGT (out > 0)    | 正のとき       |
+        | 0  | 1  | 0  | JEQ (out = 0)    | 0のとき        |
+        | 0  | 1  | 1  | JGE (out ≥ 0)    | 正または0のとき|
+        | 1  | 0  | 0  | JLT (out < 0)    | 負のとき       |
+        | 1  | 0  | 1  | JNE (out ≠ 0)    | 0以外のとき    |
+        | 1  | 1  | 0  | JLE (out ≤ 0)    | 負または0のとき|
+        | 1  | 1  | 1  | JMP (常にジャンプ)| 常に           |
+    */
+    Not(in=aluOutIsZero, out=aluOutIsNotZero);
+    Not(in=aluOutIsNegative, out=aluOutIsZeroOrPositive);
+    And(a=aluOutIsNotZero, b=aluOutIsZeroOrPositive, out=aluOutIsPositive);
+    Not(in=aluOutIsPositive , out=aluOutIsZeroOrNegative );
+
+    And(a=instruction[2], b=aluOutIsNegative, out=jumpOnNegative);
+    And(a=instruction[1], b=aluOutIsZero,    out=jumpOnZero);
+    And(a=instruction[0], b=aluOutIsPositive,out=jumpOnPositive);
+
+    Or(a=jumpOnNegative, b=jumpOnZero, out=jumpNZ);
+    Or(a=jumpNZ, b=jumpOnPositive, out=jumpConditionMet);
+
+    And(a=instruction[15], b=jumpConditionMet, out=pcLoadFlag);
+    // PC
+    PC(in=aRegisterOut, load=pcLoadFlag, inc=true, reset=reset, out[0..14]=pc);
+}

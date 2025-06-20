@@ -1,0 +1,44 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Debug Add",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/BasicAssembler/bin/Debug/net9.0/BasicAssembler.dll",
+            "args": [
+                "/workspaces/nand2tetris/projects/6/BasicAssembler/assemblys/Add.asm"
+            ],
+            "cwd": "${workspaceFolder}/BasicAssembler",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": ".NET Debug Max",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/BasicAssembler/bin/Debug/net9.0/BasicAssembler.dll",
+            "args": [
+                "/workspaces/nand2tetris/projects/6/BasicAssembler/assemblys/Max.asm"
+            ],
+            "cwd": "${workspaceFolder}/BasicAssembler",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": ".NET Debug Rect",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/BasicAssembler/bin/Debug/net9.0/BasicAssembler.dll",
+            "args": [
+                "/workspaces/nand2tetris/projects/6/BasicAssembler/assemblys/Rect.asm"
+            ],
+            "cwd": "${workspaceFolder}/BasicAssembler",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }
+    ]
+}

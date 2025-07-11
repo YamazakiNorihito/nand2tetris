@@ -1,0 +1,70 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug BasicLoop",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/FullVMTranslator/bin/Debug/net9.0/FullVMTranslator.dll",
+            "args": [
+                "/workspaces/nand2tetris/projects/8/FullVMTranslator/testVmCodes/ProgramFlow/BasicLoop/BasicLoop.vm"
+            ],
+            "cwd": "${workspaceFolder}/FullVMTranslator",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Debug FibonacciSeries",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/FullVMTranslator/bin/Debug/net9.0/FullVMTranslator.dll",
+            "args": [
+                "/workspaces/nand2tetris/projects/8/FullVMTranslator/testVmCodes/ProgramFlow/FibonacciSeries/FibonacciSeries.vm"
+            ],
+            "cwd": "${workspaceFolder}/FullVMTranslator",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Debug SimpleFunction",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/FullVMTranslator/bin/Debug/net9.0/FullVMTranslator.dll",
+            "args": [
+                "/workspaces/nand2tetris/projects/8/FullVMTranslator/testVmCodes/FunctionCalls/SimpleFunction/SimpleFunction.vm"
+            ],
+            "cwd": "${workspaceFolder}/FullVMTranslator",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Debug FibonacciElement",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/FullVMTranslator/bin/Debug/net9.0/FullVMTranslator.dll",
+            "args": [
+                "/workspaces/nand2tetris/projects/8/FullVMTranslator/testVmCodes/FunctionCalls/FibonacciElement"
+            ],
+            "cwd": "${workspaceFolder}/FullVMTranslator",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Debug StaticsTest",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/FullVMTranslator/bin/Debug/net9.0/FullVMTranslator.dll",
+            "args": [
+                "/workspaces/nand2tetris/projects/8/FullVMTranslator/testVmCodes/FunctionCalls/StaticsTest"
+            ],
+            "cwd": "${workspaceFolder}/FullVMTranslator",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }
+    ]
+}

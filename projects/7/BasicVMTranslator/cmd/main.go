@@ -54,10 +54,13 @@ func main() {
 	codewriter.SetFileName(fileName)
 
 	for parser.HasMoreLines() {
-		err = parser.Advance()
+		ok, err := parser.Advance()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Failed to advance parser: %v\n", err)
 			os.Exit(1)
+		}
+		if !ok {
+			break
 		}
 
 		switch parser.CommandType() {

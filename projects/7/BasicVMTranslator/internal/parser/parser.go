@@ -10,7 +10,7 @@ import (
 
 type IParser interface {
 	HasMoreLines() bool
-	Advance() error
+	Advance() (bool, error)
 	CommandType() config.CommandType
 	Arg1() string
 	Arg2() int
@@ -23,7 +23,6 @@ type parser struct {
 	currentLineIndex int
 	currentLine      string
 	rawLineLength    int
-	lineLength       int
 
 	commandType config.CommandType
 	arg1        string
@@ -60,7 +59,6 @@ func NewParser(r io.Reader) (IParser, error) {
 	return &parser{
 		lines:            lines,
 		rawLineLength:    len(rawLines),
-		lineLength:       len(lines),
 		commandType:      config.C_UNKNOWN,
 		currentLineIndex: -1,
 	}, nil
@@ -70,48 +68,43 @@ func (p *parser) HasMoreLines() bool {
 	return p.currentLineIndex+1 < len(p.lines)
 }
 
-func (p *parser) Advance() error {
+func (p *parser) Advance() (bool, error) {
 	if !p.HasMoreLines() {
-		return fmt.Errorf("no more lines")
+		return false, nil
 	}
 	p.resetInstructionParts()
 	p.currentLineIndex++
 	p.currentLine = p.lines[p.currentLineIndex]
 
 	parts := strings.Fields(p.currentLine)
-	if len(parts) == 0 {
-		return fmt.Errorf("empty command line")
-	}
-
 	command := parts[0]
 
-	if config.IsArithmeticCommand(command) {
-		p.commandType = config.C_ARITHMETIC
+	commandType, commandArgLength := config.GetCommandInfo(command)
+	if commandType == config.C_UNKNOWN {
+		return true, fmt.Errorf("unknown command: %s", command)
+	}
+
+	if len(parts)-1 != commandArgLength {
+		return true, fmt.Errorf("invalid number of arguments for command %s: expected %d, got %d", command, commandArgLength, len(parts)-1)
+	}
+
+	p.commandType = commandType
+	if commandArgLength >= 1 {
+		p.arg1 = parts[1]
+	} else {
 		p.arg1 = command
-		return nil
 	}
 
-	if len(parts) != 3 {
-		return fmt.Errorf("invalid command format for non-arithmetic command: %s", p.currentLine)
+	if commandArgLength == 2 {
+		val, err := strconv.Atoi(parts[2])
+		if err != nil {
+			return true, fmt.Errorf("invalid argument for %s: %w", command, err)
+		}
+		p.arg2 = val
+	} else {
+		p.arg2 = 0
 	}
-
-	p.arg1 = parts[1]
-	val, err := strconv.Atoi(parts[2])
-	if err != nil {
-		return fmt.Errorf("invalid argument for %s: %w", command, err)
-	}
-	p.arg2 = val
-
-	switch command {
-	case "push":
-		p.commandType = config.C_PUSH
-	case "pop":
-		p.commandType = config.C_POP
-	default:
-		return fmt.Errorf("unknown command: %s", command)
-	}
-
-	return nil
+	return true, nil
 }
 
 func (p *parser) CommandType() config.CommandType {

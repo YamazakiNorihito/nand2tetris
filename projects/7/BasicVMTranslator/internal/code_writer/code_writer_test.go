@@ -23,18 +23,6 @@ func TestNewCodeWriter(t *testing.T) {
 		cw, err := NewCodeWriter(&buf)
 		assert.NoError(t, err)
 		assert.NotNil(t, cw)
-		assert.Equal(t, `// Bootstrap code
-@256
-D=A
-@SP
-M=D
-`, buf.String())
-	})
-
-	t.Run("returns error if writer fails", func(t *testing.T) {
-		cw, err := NewCodeWriter(&errorWriter{})
-		assert.Error(t, err)
-		assert.Nil(t, cw)
 	})
 }
 

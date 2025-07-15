@@ -1,8 +1,3 @@
-// Bootstrap code
-@256
-D=A
-@SP
-M=D
 // push constant 111
 @111
 D=A

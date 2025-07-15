@@ -76,11 +76,13 @@ func TestParser_HasMoreLines(t *testing.T) {
 
 		// Act & Assert
 		assert.True(t, p.HasMoreLines(), "should be true before first advance")
-		err = p.Advance()
+		ok, err := p.Advance()
 		assert.NoError(t, err)
+		assert.True(t, ok)
 		assert.True(t, p.HasMoreLines(), "should be true after first advance")
-		err = p.Advance()
+		ok, err = p.Advance()
 		assert.NoError(t, err)
+		assert.True(t, ok)
 		assert.False(t, p.HasMoreLines(), "should be false after second advance")
 	})
 
@@ -100,11 +102,11 @@ func TestParser_Advance(t *testing.T) {
 		p, err := NewParser(strings.NewReader("add"))
 
 		// Act
-		advanceErr := p.Advance()
+		ok, advanceErr := p.Advance()
 
 		// Assert
 		assert.NoError(t, err)
-
+		assert.True(t, ok)
 		assert.NoError(t, advanceErr)
 		assert.Equal(t, 0, p.CurrentLineIndex())
 	})
@@ -114,10 +116,11 @@ func TestParser_Advance(t *testing.T) {
 		p, err := NewParser(strings.NewReader("push constant 7"))
 
 		// Act
-		advanceErr := p.Advance()
+		ok, advanceErr := p.Advance()
 
 		// Assert
 		assert.NoError(t, err)
+		assert.True(t, ok)
 		assert.NoError(t, advanceErr)
 		assert.Equal(t, 0, p.CurrentLineIndex())
 	})
@@ -127,10 +130,11 @@ func TestParser_Advance(t *testing.T) {
 		p, err := NewParser(strings.NewReader("push constant"))
 
 		// Act
-		advanceErr := p.Advance()
+		ok, advanceErr := p.Advance()
 
 		// Assert
 		assert.NoError(t, err)
+		assert.True(t, ok)
 		assert.Error(t, advanceErr)
 	})
 
@@ -139,10 +143,11 @@ func TestParser_Advance(t *testing.T) {
 		p, err := NewParser(strings.NewReader("foo bar baz"))
 
 		// Act
-		advanceErr := p.Advance()
+		ok, advanceErr := p.Advance()
 
 		// Assert
 		assert.NoError(t, err)
+		assert.True(t, ok)
 		assert.Error(t, advanceErr)
 	})
 
@@ -151,10 +156,11 @@ func TestParser_Advance(t *testing.T) {
 		p, err := NewParser(strings.NewReader("push constant notanumber"))
 
 		// Act
-		advanceErr := p.Advance()
+		ok, advanceErr := p.Advance()
 
 		// Assert
 		assert.NoError(t, err)
+		assert.True(t, ok)
 		assert.Error(t, advanceErr)
 	})
 
@@ -163,13 +169,15 @@ func TestParser_Advance(t *testing.T) {
 		p, err := NewParser(strings.NewReader("add"))
 
 		// Act
-		advanceErr1 := p.Advance()
-		advanceErr2 := p.Advance()
+		result1, advanceErr1 := p.Advance()
+		result2, advanceErr2 := p.Advance()
 
 		// Assert
 		assert.NoError(t, err)
+		assert.True(t, result1)
 		assert.NoError(t, advanceErr1)
-		assert.Error(t, advanceErr2)
+		assert.False(t, result2)
+		assert.NoError(t, advanceErr2)
 	})
 
 	t.Run("should advance to first line (multi-line input)", func(t *testing.T) {
@@ -182,10 +190,11 @@ pop local 0      // Another inline comment.
 `))
 
 		// Act
-		advanceErr1 := p.Advance()
+		ok, advanceErr1 := p.Advance()
 
 		// Assert
 		assert.NoError(t, err)
+		assert.True(t, ok)
 		assert.NoError(t, advanceErr1)
 		assert.Equal(t, 0, p.CurrentLineIndex())
 	})
@@ -200,15 +209,18 @@ pop local 0      // Another inline comment.
 `))
 
 		// Act
-		advanceErr1 := p.Advance()
-		advanceErr2 := p.Advance()
-		advanceErr3 := p.Advance()
+		ok1, advanceErr1 := p.Advance()
+		ok2, advanceErr2 := p.Advance()
+		ok3, advanceErr3 := p.Advance()
 
 		// Assert
 		assert.NoError(t, err)
+		assert.True(t, ok1)
 		assert.NoError(t, advanceErr1)
+		assert.True(t, ok2)
 		assert.NoError(t, advanceErr2)
-		assert.Error(t, advanceErr3)
+		assert.False(t, ok3)
+		assert.NoError(t, advanceErr3)
 		assert.Equal(t, 1, p.CurrentLineIndex())
 	})
 }
@@ -232,12 +244,12 @@ func TestParser_CommandType(t *testing.T) {
 		assert.NoError(t, err)
 
 		// Act & Assert for C_PUSH
-		err = p.Advance()
+		_, err = p.Advance()
 		assert.NoError(t, err)
 		assert.Equal(t, config.C_PUSH, p.CommandType())
 
 		// Act & Assert for C_ARITHMETIC
-		err = p.Advance()
+		_, err = p.Advance()
 		assert.NoError(t, err)
 		assert.Equal(t, config.C_ARITHMETIC, p.CommandType())
 	})
@@ -248,7 +260,7 @@ func TestParser_CommandType(t *testing.T) {
 		assert.NoError(t, err)
 
 		// Act
-		err = p.Advance()
+		_, err = p.Advance()
 
 		// Assert
 		assert.Error(t, err)
@@ -272,7 +284,7 @@ func TestParser_Arg1(t *testing.T) {
 		assert.NoError(t, err)
 
 		// Act
-		err = p.Advance()
+		_, err = p.Advance()
 
 		// Assert
 		assert.NoError(t, err)
@@ -285,7 +297,7 @@ func TestParser_Arg1(t *testing.T) {
 		assert.NoError(t, err)
 
 		// Act
-		err = p.Advance()
+		_, err = p.Advance()
 
 		// Assert
 		assert.NoError(t, err)
@@ -298,7 +310,7 @@ func TestParser_Arg1(t *testing.T) {
 		assert.NoError(t, err)
 
 		// Act
-		err = p.Advance()
+		_, err = p.Advance()
 
 		// Assert
 		assert.NoError(t, err)
@@ -311,7 +323,7 @@ func TestParser_Arg1(t *testing.T) {
 		assert.NoError(t, err)
 
 		// Act
-		err = p.Advance()
+		_, err = p.Advance()
 
 		// Assert
 		assert.Error(t, err)
@@ -335,7 +347,7 @@ func TestParser_Arg2(t *testing.T) {
 		assert.NoError(t, err)
 
 		// Act
-		err = p.Advance()
+		_, err = p.Advance()
 
 		// Assert
 		assert.NoError(t, err)
@@ -348,7 +360,7 @@ func TestParser_Arg2(t *testing.T) {
 		assert.NoError(t, err)
 
 		// Act
-		err = p.Advance()
+		_, err = p.Advance()
 
 		// Assert
 		assert.NoError(t, err)
@@ -361,7 +373,7 @@ func TestParser_Arg2(t *testing.T) {
 		assert.NoError(t, err)
 
 		// Act
-		err = p.Advance()
+		_, err = p.Advance()
 
 		// Assert
 		assert.NoError(t, err)
@@ -374,7 +386,7 @@ func TestParser_Arg2(t *testing.T) {
 		assert.NoError(t, err)
 
 		// Act
-		err = p.Advance()
+		_, err = p.Advance()
 
 		// Assert
 		assert.Error(t, err)

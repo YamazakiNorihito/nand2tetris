@@ -1,0 +1,217 @@
+function Main.main 2
+call Screen.clearScreen 0
+pop temp 0
+push constant 256
+pop local 0
+push constant 128
+pop local 1
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push local 0
+push local 1
+push constant 80
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push local 0
+push local 1
+push constant 70
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push local 0
+push constant 26
+sub
+push local 1
+push constant 18
+sub
+push constant 10
+call Screen.drawCircle 3
+pop temp 0
+push local 0
+push constant 26
+add
+push local 1
+push constant 18
+sub
+push constant 10
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push local 0
+push constant 26
+sub
+push local 1
+push constant 18
+sub
+push constant 5
+call Screen.drawCircle 3
+pop temp 0
+push local 0
+push constant 26
+add
+push local 1
+push constant 18
+sub
+push constant 5
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push local 0
+push local 1
+push constant 12
+add
+push constant 8
+call Screen.drawCircle 3
+pop temp 0
+push local 0
+push constant 40
+sub
+push local 1
+push constant 28
+add
+push local 0
+push constant 40
+add
+push local 1
+push constant 28
+add
+call Screen.drawLine 4
+pop temp 0
+push local 0
+push constant 40
+sub
+push local 1
+push constant 12
+add
+push local 0
+push constant 72
+sub
+push local 1
+push constant 6
+add
+call Screen.drawLine 4
+pop temp 0
+push local 0
+push constant 40
+sub
+push local 1
+push constant 20
+add
+push local 0
+push constant 76
+sub
+push local 1
+push constant 20
+add
+call Screen.drawLine 4
+pop temp 0
+push local 0
+push constant 40
+sub
+push local 1
+push constant 28
+add
+push local 0
+push constant 72
+sub
+push local 1
+push constant 34
+add
+call Screen.drawLine 4
+pop temp 0
+push local 0
+push constant 40
+add
+push local 1
+push constant 12
+add
+push local 0
+push constant 72
+add
+push local 1
+push constant 6
+add
+call Screen.drawLine 4
+pop temp 0
+push local 0
+push constant 40
+add
+push local 1
+push constant 20
+add
+push local 0
+push constant 76
+add
+push local 1
+push constant 20
+add
+call Screen.drawLine 4
+pop temp 0
+push local 0
+push constant 40
+add
+push local 1
+push constant 28
+add
+push local 0
+push constant 72
+add
+push local 1
+push constant 34
+add
+call Screen.drawLine 4
+pop temp 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push local 0
+push constant 76
+sub
+push local 1
+push constant 52
+add
+push local 0
+push constant 76
+add
+push local 1
+push constant 76
+add
+call Screen.drawRectangle 4
+pop temp 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push local 0
+push local 1
+push constant 64
+add
+push constant 10
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push local 0
+push local 1
+push constant 64
+add
+push constant 3
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+return

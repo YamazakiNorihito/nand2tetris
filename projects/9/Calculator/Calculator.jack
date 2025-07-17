@@ -1,0 +1,139 @@
+class Calculator {
+    static int PLUS;
+    static int MINUS;
+    static int MULT;
+    static int DIV;
+    static int ZERO;
+    static int NINE;
+    field String _expression;
+    field int _index;
+    field int _length;
+
+    constructor Calculator new(String expression) {
+        let _expression = expression;
+        let _index = 0;
+        let _length = expression.length();
+        // initialize ASCII and operator constants
+        let PLUS = 43;
+        let MINUS = 45;
+        let MULT = 42;
+        let DIV = 47;
+        let ZERO = 48;
+        let NINE = 58;
+        do Output.printString(expression);
+        return this;
+    }
+
+    method void dispose() {
+        do _expression.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method int evaluate() {
+        var int result;
+        let result = expr();
+        return result;
+    }
+
+    // <expr> ::= <term> [ ('+'|'-') <term> ]*
+    method int expr() {
+        var int result;
+        var int op;
+        var int termValue;
+        var boolean loop;
+
+        let result = term();
+        let loop = true;
+
+        while ((_index < _length) & loop) {
+            let op = _expression.charAt(_index);
+
+            if ((op = PLUS) | (op = MINUS)) {
+                let _index = _index + 1;
+                let termValue = term();
+                if (op = PLUS) {
+                    let result = result + termValue;
+                } else {
+                    let result = result - termValue;
+                }
+            } else {
+                let loop = false;
+            }
+        }
+        return result;
+    }
+
+    // <term> ::= <factor> [ ('*'|'/') <factor> ]*
+    method int term() {
+        var int op;
+        var int factorValue;
+        var int result;
+        var boolean loop;
+
+        let result = factor();
+        let loop = true;
+
+        while ((_index < _length) & loop) {
+            let op = _expression.charAt(_index);
+
+            if ((op = MULT) | (op = DIV)) {
+                let _index = _index + 1;
+                let factorValue = factor();
+                if (op = MULT) {
+                    let result = result * factorValue;
+                } else {
+                    let result = result / factorValue;
+                }
+            } else {
+                let loop = false;
+            }
+        }
+        return result;
+    }
+
+    // <factor> ::= <number> | '(' <expr> ')'
+    method int factor() {
+        var int result;
+
+        if (_index < _length) {
+            if (isDigit(_expression.charAt(_index))) {
+                let result = number();
+            } else {
+                let _index = _index + 1; // skip '('
+                let result = expr();
+                let _index = _index + 1; // skip ')'
+            }
+        } else {
+            let result = 0;
+        }
+        return result;
+    }
+
+    // <number> ::= one or more digits
+    method int number() {
+        var int result;
+        var int ch;
+        var int digit;
+        var boolean loop;
+
+        let result = 0;
+        let loop = true;
+
+        while ((_index < _length) & loop) {
+            let ch = _expression.charAt(_index);
+            if (isDigit(ch)) {
+                let digit = ch - ZERO;
+                let result = result * 10 + digit;
+                let _index = _index + 1;
+            } else {
+                let loop = false;
+            }
+        }
+        return result;
+    }
+
+    method boolean isDigit(int ch) {
+        return ((ch > ZERO)|((ch = ZERO))) & ((ch < NINE)|(ch = NINE));
+    }
+}

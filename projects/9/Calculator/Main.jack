@@ -1,0 +1,16 @@
+class Main {
+    function void main() {
+        var Calculator calculator;
+        var String s;
+
+        let s = Keyboard.readLine("Type an expression (e.g., 1+2*3) and press Enter: ");
+        let calculator = Calculator.new(s);
+
+        do Output.println();
+        do Output.printInt(calculator.evaluate());
+
+        do s.dispose();
+        do calculator.dispose();
+        return;
+    }
+}

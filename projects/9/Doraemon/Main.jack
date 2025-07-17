@@ -1,0 +1,61 @@
+class Main {
+   function void main() {
+      var int cx, cy;
+
+      // 画面クリア（背景は白）
+      do Screen.clearScreen();
+
+      // 中心座標をセット
+      let cx = 256;   // 横方向の中心
+      let cy = 128;   // 縦方向の中心
+
+      // ─── 頭の輪郭 ───
+      // 黒い円（外側）
+      do Screen.setColor(true);               // 黒
+      do Screen.drawCircle(cx, cy, 80);
+      // 白い円（内側）で中身をくり抜いて輪郭にする
+      do Screen.setColor(false);              // 白
+      do Screen.drawCircle(cx, cy, 70);
+
+      // ─── 目 ───
+      // 白目
+      do Screen.setColor(false);
+      do Screen.drawCircle(cx - 26, cy - 18, 10);
+      do Screen.drawCircle(cx + 26, cy - 18, 10);
+      // 黒目（瞳）
+      do Screen.setColor(true);
+      do Screen.drawCircle(cx - 26, cy - 18, 5);
+      do Screen.drawCircle(cx + 26, cy - 18, 5);
+
+      // ─── 鼻 ───
+      do Screen.setColor(true);
+      do Screen.drawCircle(cx, cy + 12, 8);
+
+      // ─── 口 ───
+      do Screen.drawLine(cx - 40, cy + 28, cx + 40, cy + 28);
+
+      // ─── ひげ ───
+      // 左側
+      do Screen.drawLine(cx - 40, cy + 12, cx - 72, cy + 6);
+      do Screen.drawLine(cx - 40, cy + 20, cx - 76, cy + 20);
+      do Screen.drawLine(cx - 40, cy + 28, cx - 72, cy + 34);
+      // 右側
+      do Screen.drawLine(cx + 40, cy + 12, cx + 72, cy + 6);
+      do Screen.drawLine(cx + 40, cy + 20, cx + 76, cy + 20);
+      do Screen.drawLine(cx + 40, cy + 28, cx + 72, cy + 34);
+
+      // ─── 首輪 ───
+      do Screen.setColor(true);
+      do Screen.drawRectangle(cx - 76, cy + 52, cx + 76, cy + 76);
+
+      // ─── 鈴 ───
+      // 白い丸（鈴本体）
+      do Screen.setColor(false);
+      do Screen.drawCircle(cx, cy + 64, 10);
+      // 黒い丸（鈴の留め具）
+      do Screen.setColor(true);
+      do Screen.drawCircle(cx, cy + 64, 3);
+
+      return;
+   }
+}

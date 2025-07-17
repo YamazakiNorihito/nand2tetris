@@ -1,0 +1,43 @@
+// ファイル名とクラス名を “Main” で合わせます
+class Main {
+   
+   // 文字コード '0' (48) を使って '1'..'5' の文字を整数 1..5 に変換
+   /*
+    Keyboard.readChar() は、例えばユーザーがキーで '1' を押すと、文字コードの 49（ASCII の '1'）を返します。
+   */
+   function int charToInt(int c) {
+      return c - 48;
+   }
+
+   function void main() {
+      var int secret, guess, gameOver;
+      // 秘密の数字
+      let secret = 3;
+      // 0: 続行／1: 終了
+      let gameOver = 0;
+
+      // gameOver が 0 の間ループ
+      while (gameOver = 0) {
+         // プロンプト表示
+         do Output.printString("Guess a number (1-5): ");
+         
+         // 1文字入力 (ASCII コードとして返る) → 関数呼び出しで整数化
+         let guess = Main.charToInt( Keyboard.readChar() );
+
+         // 正解判定
+         if (guess = secret) {
+            do Output.println();      // New line
+            do Output.println();      // New line
+            do Output.printString("You win!\n");
+            // ゲーム終了フラグを立てる
+            let gameOver = 1;
+         } else {
+            do Output.println();      // New line
+            do Output.printString("Wrong! Try again\n");
+            do Output.println();      // New line
+         }
+      }
+
+      return;
+   }
+}

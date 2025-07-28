@@ -7,6 +7,62 @@ import (
 	"ny/nand2tetris/compiler1/internal/token_patterns"
 )
 
+type IToken interface {
+	GetTokenType() jack_tokenizer.TokenType
+	GetKeyword() token_patterns.KeywordType
+	GetSymbol() string
+	GetIntegerVal() int
+	GetStringVal() string
+	GetIdentifier() string
+	GetName() string
+	GetValue() string
+	IsClass() bool
+	IsMethod() bool
+	IsFunction() bool
+	IsConstructor() bool
+	IsField() bool
+	IsStatic() bool
+	IsVar() bool
+	IsInt() bool
+	IsChar() bool
+	IsBoolean() bool
+	IsVoid() bool
+	IsReturn() bool
+	IsIf() bool
+	IsElse() bool
+	IsWhile() bool
+	IsDo() bool
+	IsLet() bool
+	IsTrue() bool
+	IsFalse() bool
+	IsNull() bool
+	IsThis() bool
+	IsSymbol() bool
+	IsIdentifier() bool
+	IsIntConst() bool
+	IsStringConst() bool
+	IsTerm() bool
+	IsKeywordConstant() bool
+	IsOpenParen() bool
+	IsCloseParen() bool
+	IsOpenBrace() bool
+	IsCloseBrace() bool
+	IsOpenBracket() bool
+	IsCloseBracket() bool
+	IsClassVarDec() bool
+	IsSubroutineDec() bool
+	IsType() bool
+	IsComma() bool
+	IsSemicolon() bool
+	IsStatement() bool
+	IsEqual() bool
+	IsDot() bool
+	IsArrayItem(nextToken IToken) bool
+	IsSubroutineCall(nextToken IToken) bool
+	IsOp() bool
+	IsUnaryOp() bool
+}
+
 type Token struct {
 	tokenType  jack_tokenizer.TokenType
 	keyword    token_patterns.KeywordType
@@ -211,12 +267,12 @@ func (t *Token) IsDot() bool {
 }
 
 // is item of Array
-func (t *Token) IsArrayItem(nextToken *Token) bool {
+func (t *Token) IsArrayItem(nextToken IToken) bool {
 	return t.IsIdentifier() && nextToken != nil && nextToken.IsOpenBracket()
 }
 
 // is subroutine call
-func (t *Token) IsSubroutineCall(nextToken *Token) bool {
+func (t *Token) IsSubroutineCall(nextToken IToken) bool {
 	return t.IsIdentifier() && (nextToken != nil && (nextToken.IsOpenParen() || nextToken.IsDot()))
 }
 
@@ -230,7 +286,7 @@ func (t *Token) IsUnaryOp() bool {
 	return t.tokenType == jack_tokenizer.SYMBOL && (t.symbol == "-" || t.symbol == "~")
 }
 
-func Build(tokenizer jack_tokenizer.IJackTokenizer) (tokens []Token, err error) {
+func Build(tokenizer jack_tokenizer.IJackTokenizer) (tokens []IToken, err error) {
 	if !tokenizer.HasMoreTokens() {
 		return nil, nil
 	}
@@ -260,7 +316,7 @@ func Build(tokenizer jack_tokenizer.IJackTokenizer) (tokens []Token, err error) 
 		default:
 			return nil, fmt.Errorf("unknown token type: %s", tokenType)
 		}
-		tokens = append(tokens, token)
+		tokens = append(tokens, &token)
 	}
 	return tokens, nil
 }

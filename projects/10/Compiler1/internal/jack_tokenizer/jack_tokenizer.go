@@ -149,22 +149,62 @@ func getCodeLines(content string) []string {
 }
 
 func removeCommentBlocks(content string) string {
-	for {
-		start := strings.Index(content, "/*")
-		end := strings.Index(content, "*/")
-		if start == -1 || end == -1 || end < start {
-			break
+	inString := false
+	inBlockComment := false
+	var result []rune
+
+	for i := 0; i < len(content); {
+
+		//  "/* comment */" の前後で文字列を認識するために、文字列内ではコメントを無視する
+		if !inString && !inBlockComment && i+1 < len(content) && content[i] == '/' && content[i+1] == '*' {
+			if i+2 < len(content) && content[i+2] == '*' {
+				inBlockComment = true
+				i += 3
+				continue
+			} else {
+				inBlockComment = true
+				i += 2
+				continue
+			}
 		}
-		content = content[:start] + content[end+2:]
+		if inBlockComment {
+			if i+1 < len(content) && content[i] == '*' && content[i+1] == '/' {
+				inBlockComment = false
+				i += 2
+			} else {
+				i++
+			}
+			continue
+		}
+
+		//  "// comment" の前後で文字列を認識するために、文字列内ではコメントを無視する
+		if !inString && i+1 < len(content) && content[i] == '/' && content[i+1] == '/' {
+			// Skip to the end of line
+			for i < len(content) && content[i] != '\n' {
+				i++
+			}
+			continue
+		}
+
+		// "string" の文字列の処理をする。
+		if content[i] == '"' {
+			result = append(result, rune(content[i]))
+			i++
+			inString = !inString
+			continue
+		}
+
+		result = append(result, rune(content[i]))
+		i++
 	}
 
-	lines := strings.Split(content, "\n")
+	isEmpty := func(s string) bool {
+		return strings.TrimSpace(s) == ""
+	}
+	lines := strings.Split(string(result), "\n")
 	var cleaned []string
 	for _, line := range lines {
-		if idx := strings.Index(line, "//"); idx != -1 {
-			line = line[:idx]
-		}
-		if strings.TrimSpace(line) == "" {
+		if isEmpty(line) {
 			continue
 		}
 		cleaned = append(cleaned, line)
@@ -172,6 +212,7 @@ func removeCommentBlocks(content string) string {
 
 	return strings.ReplaceAll(strings.Join(cleaned, "\n"), "\r\n", "\n")
 }
+
 func (j *JackTokenizer) setToken(token string) {
 	j.clearToken()
 

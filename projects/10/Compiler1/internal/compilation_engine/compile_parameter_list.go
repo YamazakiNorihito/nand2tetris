@@ -24,7 +24,12 @@ func (ce *CompilationEngine) compileParameterList() error {
 		}
 
 		// Type token (e.g., int, char, boolean, className)
-		paramListComponent.Children = append(paramListComponent.Children, component.New("keyword", token.GetValue()))
+		if token.IsIdentifier() {
+			paramListComponent.Children = append(paramListComponent.Children, component.New("identifier", token.GetValue()))
+
+		} else {
+			paramListComponent.Children = append(paramListComponent.Children, component.New("keyword", token.GetValue()))
+		}
 		ce.index++
 
 		// Parameter name

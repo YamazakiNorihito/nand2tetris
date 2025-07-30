@@ -11,45 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const demoCode = `// This file is part of www.nand2tetris.org
-// and the book "The Elements of Computing Systems"
-// by Nisan and Schocken, MIT Press.
-// File name: projects/10/ArrayTest/Main.jack
-
-// (same as projects/9/Average/Main.jack)
-
-/** Computes the average of a sequence of integers. */
-class Main {
-    function void main() {
-        var Array a;
-        var int length;
-        var int i, sum;
-	
-	let length = Keyboard.readInt("HOW MANY NUMBERS? ");
-	let a = Array.new(length);
-	let i = 0;
-	
-	while (i < length) {
-	    let a[i] = Keyboard.readInt("ENTER THE NEXT NUMBER: ");
-	    let i = i + 1;
-	}
-	
-	let i = 0;
-	let sum = 0;
-	
-	while (i < length) {
-	    let sum = sum + a[i];
-	    let i = i + 1;
-	}
-	
-	do Output.printString("THE AVERAGE IS: ");
-	do Output.printInt(sum / length);
-	do Output.println();
-	
-	return;
-    }
-}`
-
 type errorReader struct{}
 
 func (e *errorReader) Read(p []byte) (n int, err error) {
@@ -108,12 +69,12 @@ func TestNewAnalysis(t *testing.T) {
 /** Computes the average of a sequence of integers. */
 
 class Main {
-    function void main() { // main block
+	function void main() { // main block
 		/*
 			process code
 		*/
 	return;
-    }
+	}
 }`)
 
 		// Act
@@ -125,10 +86,48 @@ class Main {
 
 		assert.Len(t, p.getCodeLines(), 5)
 		assert.Equal(t, "class Main {", p.getCodeLines()[0])
-		assert.Equal(t, "    function void main() { ", p.getCodeLines()[1])
+		assert.Equal(t, "	function void main() { ", p.getCodeLines()[1])
 		assert.Equal(t, "	return;", p.getCodeLines()[2])
-		assert.Equal(t, "    }", p.getCodeLines()[3])
+		assert.Equal(t, "	}", p.getCodeLines()[3])
 		assert.Equal(t, "}", p.getCodeLines()[4])
+	})
+	t.Run("should correctly ignore comments inside string constants and parse class definition", func(t *testing.T) {
+		// Arrange
+		reader := strings.NewReader(`
+// single comment
+/** This is a API Document block comment */
+/**
+		This is a API Document block comments
+*/
+/* This is a block comment */
+/*
+		This is a block comments
+*/
+class Main {
+	function void main() { // main block
+		do Output.printString("/* comments */");
+		do Output.printString("/** comments */");
+		do Output.printString("// comment ");
+	return;
+	}
+}`)
+
+		// Act
+		p, err := NewAnalysis(reader)
+
+		// Assert
+		assert.NoError(t, err)
+		assert.NotNil(t, p)
+
+		assert.Len(t, p.getCodeLines(), 8)
+		assert.Equal(t, "class Main {", p.getCodeLines()[0])
+		assert.Equal(t, "	function void main() { ", p.getCodeLines()[1])
+		assert.Equal(t, "		do Output.printString(\"/* comments */\");", p.getCodeLines()[2])
+		assert.Equal(t, "		do Output.printString(\"/** comments */\");", p.getCodeLines()[3])
+		assert.Equal(t, "		do Output.printString(\"// comment \");", p.getCodeLines()[4])
+		assert.Equal(t, "	return;", p.getCodeLines()[5])
+		assert.Equal(t, "	}", p.getCodeLines()[6])
+		assert.Equal(t, "}", p.getCodeLines()[7])
 	})
 }
 
@@ -154,10 +153,10 @@ func TestHasMoreTokens(t *testing.T) {
 func TestAdvance(t *testing.T) {
 	t.Run("should advance through all tokens", func(t *testing.T) {
 		const code = `class Main {
-        function void main() {
-            return;
-        }
-    }`
+		function void main() {
+			return;
+		}
+	}`
 
 		p, err := NewAnalysis(strings.NewReader(code))
 		assert.NoError(t, err)

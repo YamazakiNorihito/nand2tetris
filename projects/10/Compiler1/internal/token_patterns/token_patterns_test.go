@@ -259,3 +259,76 @@ func TestTokenSplitAndKeepDelimiters(t *testing.T) {
 		}
 	})
 }
+func TestTokenSplitAndKeepDelimiters_KeywordBoundaries(t *testing.T) {
+	t.Run("should split keywords only at word boundaries", func(t *testing.T) {
+		input := "class Main function void main() { let returnValue = 1; return; }"
+		expected := []string{
+			"class", " ", "Main", " ", "function", " ", "void", " ", "main", "(", ")", " ", "{", " ", "let", " ", "returnValue", " ", "=", " ", "1", ";", " ", "return", ";", " ", "}",
+		}
+		tokens := TokenSplitAndKeepDelimiters(input)
+		if len(tokens) != len(expected) {
+			t.Fatalf("expected %d tokens, got %d", len(expected), len(tokens))
+		}
+		for i, token := range tokens {
+			if token != expected[i] {
+				t.Errorf("token mismatch at index %d: got %q, expected %q", i, token, expected[i])
+			}
+		}
+	})
+
+	t.Run("should not split keywords inside identifiers", func(t *testing.T) {
+		input := "classTest function1 returnValue"
+		expected := []string{"classTest", " ", "function1", " ", "returnValue"}
+		tokens := TokenSplitAndKeepDelimiters(input)
+		if len(tokens) != len(expected) {
+			t.Fatalf("expected %d tokens, got %d", len(expected), len(tokens))
+		}
+		for i, token := range tokens {
+			if token != expected[i] {
+				t.Errorf("token mismatch at index %d: got %q, expected %q", i, token, expected[i])
+			}
+		}
+	})
+
+	t.Run("should split multiple keywords in a row", func(t *testing.T) {
+		input := "if else while return"
+		expected := []string{"if", " ", "else", " ", "while", " ", "return"}
+		tokens := TokenSplitAndKeepDelimiters(input)
+		if len(tokens) != len(expected) {
+			t.Fatalf("expected %d tokens, got %d", len(expected), len(tokens))
+		}
+		for i, token := range tokens {
+			if token != expected[i] {
+				t.Errorf("token mismatch at index %d: got %q, expected %q", i, token, expected[i])
+			}
+		}
+	})
+
+	t.Run("should split keywords at string boundaries", func(t *testing.T) {
+		input := "class"
+		expected := []string{"class"}
+		tokens := TokenSplitAndKeepDelimiters(input)
+		if len(tokens) != len(expected) {
+			t.Fatalf("expected %d tokens, got %d", len(expected), len(tokens))
+		}
+		for i, token := range tokens {
+			if token != expected[i] {
+				t.Errorf("token mismatch at index %d: got %q, expected %q", i, token, expected[i])
+			}
+		}
+	})
+
+	t.Run("should split keywords surrounded by symbols", func(t *testing.T) {
+		input := "(if){return;}"
+		expected := []string{"(", "if", ")", "{", "return", ";", "}"}
+		tokens := TokenSplitAndKeepDelimiters(input)
+		if len(tokens) != len(expected) {
+			t.Fatalf("expected %d tokens, got %d", len(expected), len(tokens))
+		}
+		for i, token := range tokens {
+			if token != expected[i] {
+				t.Errorf("token mismatch at index %d: got %q, expected %q", i, token, expected[i])
+			}
+		}
+	})
+}

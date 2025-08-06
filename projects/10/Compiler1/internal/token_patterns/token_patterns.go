@@ -39,7 +39,7 @@ const (
 		'null' | 'this' | 'let' | 'do' | 'if' | 'else' |
 		'while' | 'return’
 	*/
-	KeywordRegexExpression = `(class|constructor|function|method|field|static|var|int|char|boolean|void|true|false|null|this|let|do|if|else|while|return)`
+	KeywordRegexExpression = `\b(class|constructor|function|method|field|static|var|int|char|boolean|void|true|false|null|this|let|do|if|else|while|return)\b`
 	// symbol: '{' | '}' | '(' | ')' | '[' | ']' | '. ' | ', ' | '; ' | '+' | '-' | '*' | '/' | '&' | '|' | '<' | '>' | '=' | '~'
 	SymbolRegexExpression = `[{}\(\)\[\]\.,;\+\-\*/&|<>=~]`
 	// integerConstant: a decimal number in the range 0 ... 32767

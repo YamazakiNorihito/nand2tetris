@@ -24,6 +24,7 @@ func (ce *CompilationEngine) CompileClass() error {
 	}
 	classComponent.Children = append(classComponent.Children,
 		component.NewClassComponent("identifier", token.GetIdentifier()))
+	ce.className = token.GetIdentifier()
 	ce.index++
 
 	// '{'

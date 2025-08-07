@@ -11,7 +11,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${fileDirname}",
-            "args": ["/workspaces/nand2tetris/projects/11/Compiler/testVmCodes/DebugCode"],
+            "args": ["/workspaces/nand2tetris/projects/11/Compiler/testVmCodes/Average"],
             "env": {},
             "cwd": "${workspaceFolder}",
             "stopOnEntry": false,

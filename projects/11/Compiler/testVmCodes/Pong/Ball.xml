@@ -425,10 +425,10 @@
     <symbol>(</symbol>
     <parameterList>
       <keyword>int</keyword>
-      <identifier name="destx" category="arg" index="0" usage="declared">destx</identifier>
+      <identifier name="destx" category="arg" index="1" usage="declared">destx</identifier>
       <symbol>,</symbol>
       <keyword>int</keyword>
-      <identifier name="desty" category="arg" index="1" usage="declared">desty</identifier>
+      <identifier name="desty" category="arg" index="2" usage="declared">desty</identifier>
     </parameterList>
     <symbol>)</symbol>
     <subroutineBody>
@@ -450,7 +450,7 @@
           <symbol>=</symbol>
           <expression>
             <term>
-              <identifier name="destx" category="arg" index="0" usage="used">destx</identifier>
+              <identifier name="destx" category="arg" index="1" usage="used">destx</identifier>
             </term>
             <symbol>-</symbol>
             <term>
@@ -465,7 +465,7 @@
           <symbol>=</symbol>
           <expression>
             <term>
-              <identifier name="desty" category="arg" index="1" usage="used">desty</identifier>
+              <identifier name="desty" category="arg" index="2" usage="used">desty</identifier>
             </term>
             <symbol>-</symbol>
             <term>
@@ -596,7 +596,7 @@
                     </term>
                     <symbol>&lt;</symbol>
                     <term>
-                      <identifier name="desty" category="arg" index="1" usage="used">desty</identifier>
+                      <identifier name="desty" category="arg" index="2" usage="used">desty</identifier>
                     </term>
                   </expression>
                   <symbol>)</symbol>
@@ -617,7 +617,7 @@
                     </term>
                     <symbol>&lt;</symbol>
                     <term>
-                      <identifier name="destx" category="arg" index="0" usage="used">destx</identifier>
+                      <identifier name="destx" category="arg" index="1" usage="used">destx</identifier>
                     </term>
                   </expression>
                   <symbol>)</symbol>
@@ -643,7 +643,7 @@
                     </term>
                     <symbol>&lt;</symbol>
                     <term>
-                      <identifier name="destx" category="arg" index="0" usage="used">destx</identifier>
+                      <identifier name="destx" category="arg" index="1" usage="used">destx</identifier>
                     </term>
                   </expression>
                   <symbol>)</symbol>
@@ -664,7 +664,7 @@
                     </term>
                     <symbol>&lt;</symbol>
                     <term>
-                      <identifier name="desty" category="arg" index="1" usage="used">desty</identifier>
+                      <identifier name="desty" category="arg" index="2" usage="used">desty</identifier>
                     </term>
                   </expression>
                   <symbol>)</symbol>
@@ -1277,7 +1277,7 @@
     <symbol>(</symbol>
     <parameterList>
       <keyword>int</keyword>
-      <identifier name="bouncingDirection" category="arg" index="0" usage="declared">bouncingDirection</identifier>
+      <identifier name="bouncingDirection" category="arg" index="1" usage="declared">bouncingDirection</identifier>
     </parameterList>
     <symbol>)</symbol>
     <subroutineBody>
@@ -1332,7 +1332,7 @@
           <symbol>(</symbol>
           <expression>
             <term>
-              <identifier name="bouncingDirection" category="arg" index="0" usage="used">bouncingDirection</identifier>
+              <identifier name="bouncingDirection" category="arg" index="1" usage="used">bouncingDirection</identifier>
             </term>
             <symbol>=</symbol>
             <term>
@@ -1392,7 +1392,7 @@
                       <symbol>(</symbol>
                       <expression>
                         <term>
-                          <identifier name="bouncingDirection" category="arg" index="0" usage="used">bouncingDirection</identifier>
+                          <identifier name="bouncingDirection" category="arg" index="1" usage="used">bouncingDirection</identifier>
                         </term>
                         <symbol>=</symbol>
                         <term>
@@ -1426,7 +1426,7 @@
                       <symbol>(</symbol>
                       <expression>
                         <term>
-                          <identifier name="bouncingDirection" category="arg" index="0" usage="used">bouncingDirection</identifier>
+                          <identifier name="bouncingDirection" category="arg" index="1" usage="used">bouncingDirection</identifier>
                         </term>
                         <symbol>=</symbol>
                         <term>

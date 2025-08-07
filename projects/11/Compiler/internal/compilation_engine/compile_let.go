@@ -5,6 +5,8 @@ import (
 	"ny/nand2tetris/compiler/internal/component"
 	symboltable "ny/nand2tetris/compiler/internal/symbol_table"
 	"ny/nand2tetris/compiler/internal/token_patterns"
+	Tokens "ny/nand2tetris/compiler/internal/tokens"
+	vmwriter "ny/nand2tetris/compiler/internal/vm_writer"
 )
 
 func (ce *CompilationEngine) compileLet() error {
@@ -25,6 +27,7 @@ func (ce *CompilationEngine) compileLet() error {
 
 	// variable name
 	token = ce.tokens[ce.index]
+
 	if !token.IsIdentifier() {
 		return fmt.Errorf("index %d: expected variable name, got '%s'", ce.index, token.GetValue())
 	}
@@ -33,17 +36,26 @@ func (ce *CompilationEngine) compileLet() error {
 		return fmt.Errorf("index %d: variable '%s' is not defined", ce.index, token.GetIdentifier())
 	}
 
-	letStatementComponent.Children = append(letStatementComponent.Children,
-		component.NewVariableComponent("identifier",
-			token.GetIdentifier(),
-			component.Category(ce.symbolTable.KindOf(token.GetIdentifier())),
-			ce.symbolTable.IndexOf(token.GetIdentifier()),
-			component.USED))
-	ce.index++
+	var nextToken Tokens.IToken
+	if len(ce.tokens) > ce.index+1 {
+		nextToken = ce.tokens[ce.index+1]
+	}
 
 	// '['
-	token = ce.tokens[ce.index]
-	if token.IsOpenBracket() {
+	isArray := token.IsArrayItem(nextToken)
+	letName := token.GetIdentifier()
+	if isArray {
+		letStatementComponent.Children = append(letStatementComponent.Children,
+			component.NewVariableComponent("identifier",
+				token.GetIdentifier(),
+				component.Category(ce.symbolTable.KindOf(token.GetIdentifier())),
+				ce.symbolTable.IndexOf(token.GetIdentifier()),
+				component.USED))
+
+		objectName := token.GetIdentifier()
+		ce.index++
+
+		// '['
 		letStatementComponent.Children = append(letStatementComponent.Children, component.New("symbol", "["))
 		ce.index++
 
@@ -60,8 +72,21 @@ func (ce *CompilationEngine) compileLet() error {
 			return fmt.Errorf("index %d: expected ']', got '%s'", ce.index, token.GetValue())
 		}
 		letStatementComponent.Children = append(letStatementComponent.Children, component.New("symbol", "]"))
-		ce.index++
+
+		memorySegment := variableKindMemorySegmentMap[ce.symbolTable.KindOf(objectName)]
+		index := ce.symbolTable.IndexOf(objectName)
+		ce.vmWriter.WritePush(memorySegment, index, ce.componentStack.Count()+1) // push base address of array
+		ce.vmWriter.WriteArithmetic(vmwriter.ADD, ce.componentStack.Count()+1)   // add index: a + i
+	} else {
+		letStatementComponent.Children = append(letStatementComponent.Children,
+			component.NewVariableComponent("identifier",
+				token.GetIdentifier(),
+				component.Category(ce.symbolTable.KindOf(token.GetIdentifier())),
+				ce.symbolTable.IndexOf(token.GetIdentifier()),
+				component.USED))
 	}
+
+	ce.index++
 
 	// '='
 	token = ce.tokens[ce.index]
@@ -85,6 +110,16 @@ func (ce *CompilationEngine) compileLet() error {
 	}
 	letStatementComponent.Children = append(letStatementComponent.Children, component.New("symbol", ";"))
 	ce.index++
+
+	memorySegmentType := variableKindMemorySegmentMap[ce.symbolTable.KindOf(letName)]
+	if isArray {
+		ce.vmWriter.WritePop(vmwriter.TEMP, 0, ce.componentStack.Count()+1)
+		ce.vmWriter.WritePop(vmwriter.POINTER, 1, ce.componentStack.Count()+1)
+		ce.vmWriter.WritePush(vmwriter.TEMP, 0, ce.componentStack.Count()+1)
+		ce.vmWriter.WritePop(vmwriter.THAT, 0, ce.componentStack.Count()+1)
+	} else {
+		ce.vmWriter.WritePop(memorySegmentType, ce.symbolTable.IndexOf(letName), ce.componentStack.Count()+1)
+	}
 
 	return nil
 }

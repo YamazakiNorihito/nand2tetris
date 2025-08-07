@@ -20,3 +20,7 @@ func (cs *ComponentStack) Pop() *Component {
 	cs.components = cs.components[:len(cs.components)-1]
 	return c
 }
+
+func (cs *ComponentStack) Count() int {
+	return len(cs.components)
+}

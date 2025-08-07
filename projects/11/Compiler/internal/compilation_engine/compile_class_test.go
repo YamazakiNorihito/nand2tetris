@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	vmwriter "ny/nand2tetris/compiler/internal/vm_writer"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -35,18 +37,21 @@ func TestCompileClass(t *testing.T) {
 		reader := strings.NewReader(inputTokensXml)
 		testTokens := tokens.LoadTokensFromXML(reader)
 
-		var buf bytes.Buffer
-		xmlEnc := xml.NewEncoder(&buf)
+		var xmlbuf bytes.Buffer
+		xmlEnc := xml.NewEncoder(&xmlbuf)
+
+		var vmbuf bytes.Buffer
+		vmWriter := vmwriter.New(&vmbuf)
 
 		// Act
-		ce, err := New(testTokens, xmlEnc)
+		ce, err := New(testTokens, xmlEnc, vmWriter)
 		assert.NoError(t, err)
 		err = ce.CompileClass()
 
 		// Assert
 		assert.NoError(t, err)
 
-		assert.Equal(t, expectedXml, buf.String())
+		assert.Equal(t, expectedXml, xmlbuf.String())
 	})
 
 	t.Run("should return correct XML for ArrayTest class", func(t *testing.T) {
@@ -487,18 +492,21 @@ func TestCompileClass(t *testing.T) {
 		reader := strings.NewReader(inputTokensXml)
 		testTokens := tokens.LoadTokensFromXML(reader)
 
-		var buf bytes.Buffer
-		xmlEnc := xml.NewEncoder(&buf)
+		var xmlbuf bytes.Buffer
+		xmlEnc := xml.NewEncoder(&xmlbuf)
+
+		var vmbuf bytes.Buffer
+		vmWriter := vmwriter.New(&vmbuf)
 
 		// Act
-		ce, err := New(testTokens, xmlEnc)
+		ce, err := New(testTokens, xmlEnc, vmWriter)
 		assert.NoError(t, err)
 		err = ce.CompileClass()
 
 		// Assert
 		assert.NoError(t, err)
 
-		assert.Equal(t, expectedXml, buf.String())
+		assert.Equal(t, expectedXml, xmlbuf.String())
 	})
 
 	t.Run("should return correct XML for Square class", func(t *testing.T) {
@@ -876,18 +884,21 @@ func TestCompileClass(t *testing.T) {
 			reader := strings.NewReader(inputTokensXml)
 			testTokens := tokens.LoadTokensFromXML(reader)
 
-			var buf bytes.Buffer
-			xmlEnc := xml.NewEncoder(&buf)
+			var xmlbuf bytes.Buffer
+			xmlEnc := xml.NewEncoder(&xmlbuf)
+
+			var vmbuf bytes.Buffer
+			vmWriter := vmwriter.New(&vmbuf)
 
 			// Act
-			ce, err := New(testTokens, xmlEnc)
+			ce, err := New(testTokens, xmlEnc, vmWriter)
 			assert.NoError(t, err)
 			err = ce.CompileClass()
 
 			// Assert
 			assert.NoError(t, err)
 
-			assert.Equal(t, expectedXml, buf.String())
+			assert.Equal(t, expectedXml, xmlbuf.String())
 		})
 		t.Run("should return XML when compiling Square.jack", func(t *testing.T) {
 
@@ -2656,18 +2667,21 @@ func TestCompileClass(t *testing.T) {
 			reader := strings.NewReader(inputTokensXml)
 			testTokens := tokens.LoadTokensFromXML(reader)
 
-			var buf bytes.Buffer
-			xmlEnc := xml.NewEncoder(&buf)
+			var xmlbuf bytes.Buffer
+			xmlEnc := xml.NewEncoder(&xmlbuf)
+
+			var vmbuf bytes.Buffer
+			vmWriter := vmwriter.New(&vmbuf)
 
 			// Act
-			ce, err := New(testTokens, xmlEnc)
+			ce, err := New(testTokens, xmlEnc, vmWriter)
 			assert.NoError(t, err)
 			err = ce.CompileClass()
 
 			// Assert
 			assert.NoError(t, err)
 
-			assert.Equal(t, expectedXml, buf.String())
+			assert.Equal(t, expectedXml, xmlbuf.String())
 		})
 
 		t.Run("should return XML when compiling SquareGame.jack", func(t *testing.T) {
@@ -3622,18 +3636,21 @@ func TestCompileClass(t *testing.T) {
 			reader := strings.NewReader(inputTokensXml)
 			testTokens := tokens.LoadTokensFromXML(reader)
 
-			var buf bytes.Buffer
-			xmlEnc := xml.NewEncoder(&buf)
+			var xmlbuf bytes.Buffer
+			xmlEnc := xml.NewEncoder(&xmlbuf)
+
+			var vmbuf bytes.Buffer
+			vmWriter := vmwriter.New(&vmbuf)
 
 			// Act
-			ce, err := New(testTokens, xmlEnc)
+			ce, err := New(testTokens, xmlEnc, vmWriter)
 			assert.NoError(t, err)
 			err = ce.CompileClass()
 
 			// Assert
 			assert.NoError(t, err)
 
-			assert.Equal(t, expectedXml, buf.String())
+			assert.Equal(t, expectedXml, xmlbuf.String())
 		})
 	})
 
@@ -4012,18 +4029,21 @@ func TestCompileClass(t *testing.T) {
 			reader := strings.NewReader(inputTokensXml)
 			testTokens := tokens.LoadTokensFromXML(reader)
 
-			var buf bytes.Buffer
-			xmlEnc := xml.NewEncoder(&buf)
+			var xmlbuf bytes.Buffer
+			xmlEnc := xml.NewEncoder(&xmlbuf)
+
+			var vmbuf bytes.Buffer
+			vmWriter := vmwriter.New(&vmbuf)
 
 			// Act
-			ce, err := New(testTokens, xmlEnc)
+			ce, err := New(testTokens, xmlEnc, vmWriter)
 			assert.NoError(t, err)
 			err = ce.CompileClass()
 
 			// Assert
 			assert.NoError(t, err)
 
-			assert.Equal(t, expectedXml, buf.String())
+			assert.Equal(t, expectedXml, xmlbuf.String())
 		})
 		t.Run("should return XML when compiling Square.jack", func(t *testing.T) {
 
@@ -5792,18 +5812,21 @@ func TestCompileClass(t *testing.T) {
 			reader := strings.NewReader(inputTokensXml)
 			testTokens := tokens.LoadTokensFromXML(reader)
 
-			var buf bytes.Buffer
-			xmlEnc := xml.NewEncoder(&buf)
+			var xmlbuf bytes.Buffer
+			xmlEnc := xml.NewEncoder(&xmlbuf)
+
+			var vmbuf bytes.Buffer
+			vmWriter := vmwriter.New(&vmbuf)
 
 			// Act
-			ce, err := New(testTokens, xmlEnc)
+			ce, err := New(testTokens, xmlEnc, vmWriter)
 			assert.NoError(t, err)
 			err = ce.CompileClass()
 
 			// Assert
 			assert.NoError(t, err)
 
-			assert.Equal(t, expectedXml, buf.String())
+			assert.Equal(t, expectedXml, xmlbuf.String())
 		})
 
 		t.Run("should return XML when compiling SquareGame.jack", func(t *testing.T) {
@@ -6761,8 +6784,11 @@ func TestCompileClass(t *testing.T) {
 			var buf bytes.Buffer
 			xmlEnc := xml.NewEncoder(&buf)
 
+			var vmbuf bytes.Buffer
+			vmWriter := vmwriter.New(&vmbuf)
+
 			// Act
-			ce, err := New(testTokens, xmlEnc)
+			ce, err := New(testTokens, xmlEnc, vmWriter)
 			assert.NoError(t, err)
 			err = ce.CompileClass()
 

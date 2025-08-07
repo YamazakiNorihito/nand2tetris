@@ -1,8 +1,17 @@
-
 class Main {
+    field int x, y;               // the ball's screen location (in pixels)
 
     function void main() {
-        let a = Main.double(2)
         return;
+    }
+
+    constructor Main new(int Ax, int Ay) {
+	    let x = Ax;		
+	    let y = Ay;
+        return this;
+    }
+
+    method int evaluate() {
+        return x + y;
     }
 }

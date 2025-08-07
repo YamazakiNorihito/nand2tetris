@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"ny/nand2tetris/compiler/internal/component"
 	"ny/nand2tetris/compiler/internal/token_patterns"
+	vmwriter "ny/nand2tetris/compiler/internal/vm_writer"
 )
 
 func (ce *CompilationEngine) compileDo() error {
@@ -36,6 +37,8 @@ func (ce *CompilationEngine) compileDo() error {
 	}
 	doStatementComponent.Children = append(doStatementComponent.Children, component.New("symbol", ";"))
 	ce.index++
+
+	ce.vmWriter.WritePop(vmwriter.TEMP, 0, ce.componentStack.Count()+1)
 
 	return nil
 }

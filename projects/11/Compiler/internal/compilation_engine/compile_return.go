@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"ny/nand2tetris/compiler/internal/component"
 	"ny/nand2tetris/compiler/internal/token_patterns"
+	vmwriter "ny/nand2tetris/compiler/internal/vm_writer"
 )
 
 func (ce *CompilationEngine) compileReturn() error {
@@ -37,5 +38,16 @@ func (ce *CompilationEngine) compileReturn() error {
 	returnStatementComponent.Children = append(returnStatementComponent.Children, component.New("symbol", ";"))
 	ce.index++
 
+	// Write VM return
+	ce.writeVMReturn()
+
 	return nil
+}
+
+func (ce *CompilationEngine) writeVMReturn() {
+	indentLevel := ce.componentStack.Count() + 1
+	if ce.subroutineInfo.returnType == string(token_patterns.VOID) {
+		ce.vmWriter.WritePush(vmwriter.CONSTANT, 0, indentLevel)
+	}
+	ce.vmWriter.WriteReturn(indentLevel)
 }

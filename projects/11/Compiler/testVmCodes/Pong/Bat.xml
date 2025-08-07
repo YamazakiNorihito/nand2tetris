@@ -307,7 +307,7 @@
     <symbol>(</symbol>
     <parameterList>
       <keyword>int</keyword>
-      <identifier name="Adirection" category="arg" index="0" usage="declared">Adirection</identifier>
+      <identifier name="Adirection" category="arg" index="1" usage="declared">Adirection</identifier>
     </parameterList>
     <symbol>)</symbol>
     <subroutineBody>
@@ -319,7 +319,7 @@
           <symbol>=</symbol>
           <expression>
             <term>
-              <identifier name="Adirection" category="arg" index="0" usage="used">Adirection</identifier>
+              <identifier name="Adirection" category="arg" index="1" usage="used">Adirection</identifier>
             </term>
           </expression>
           <symbol>;</symbol>
@@ -389,7 +389,7 @@
     <symbol>(</symbol>
     <parameterList>
       <keyword>int</keyword>
-      <identifier name="Awidth" category="arg" index="0" usage="declared">Awidth</identifier>
+      <identifier name="Awidth" category="arg" index="1" usage="declared">Awidth</identifier>
     </parameterList>
     <symbol>)</symbol>
     <subroutineBody>
@@ -409,7 +409,7 @@
           <symbol>=</symbol>
           <expression>
             <term>
-              <identifier name="Awidth" category="arg" index="0" usage="used">Awidth</identifier>
+              <identifier name="Awidth" category="arg" index="1" usage="used">Awidth</identifier>
             </term>
           </expression>
           <symbol>;</symbol>

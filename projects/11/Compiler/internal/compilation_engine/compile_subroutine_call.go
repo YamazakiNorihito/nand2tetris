@@ -71,10 +71,10 @@ func (ce *CompilationEngine) compileSubroutineCall() error {
 	if isInstanceCall {
 		if instancename == "" {
 			// this.method 呼び出し（例：do draw();）
-			ce.vmWriter.WritePush("pointer", 0, ce.componentStack.Count()+1)
+			ce.vmWriter.WritePush("pointer", 0)
 		} else {
 			// 変数からのメソッド呼び出し（例：square.draw();）
-			ce.vmWriter.WritePush(variableKindMemorySegmentMap[ce.symbolTable.KindOf(instancename)], ce.symbolTable.IndexOf(instancename), ce.componentStack.Count()+1)
+			ce.vmWriter.WritePush(variableKindMemorySegmentMap[ce.symbolTable.KindOf(instancename)], ce.symbolTable.IndexOf(instancename))
 		}
 	}
 
@@ -103,9 +103,9 @@ func (ce *CompilationEngine) compileSubroutineCall() error {
 	ce.index++
 
 	if isInstanceCall {
-		ce.vmWriter.WriteCall(callFunctionName, nArg+1, ce.componentStack.Count()+1)
+		ce.vmWriter.WriteCall(callFunctionName, nArg+1)
 	} else {
-		ce.vmWriter.WriteCall(callFunctionName, nArg, ce.componentStack.Count()+1)
+		ce.vmWriter.WriteCall(callFunctionName, nArg)
 	}
 
 	return nil

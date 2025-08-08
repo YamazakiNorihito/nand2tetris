@@ -25,7 +25,7 @@ func (ce *CompilationEngine) compileTerm() error {
 	if token.IsIntConst() {
 		termComponent.Children = append(termComponent.Children, component.New("integerConstant", token.GetValue()))
 
-		ce.vmWriter.WritePush(vmwriter.CONSTANT, token.GetIntegerVal(), ce.componentStack.Count()+1)
+		ce.vmWriter.WritePush(vmwriter.CONSTANT, token.GetIntegerVal())
 
 		ce.index++
 		return nil
@@ -35,11 +35,11 @@ func (ce *CompilationEngine) compileTerm() error {
 		termComponent.Children = append(termComponent.Children, component.New("stringConstant", token.GetValue()))
 
 		length := len(token.GetStringVal())
-		ce.vmWriter.WritePush(vmwriter.CONSTANT, length, ce.componentStack.Count()+1)
-		ce.vmWriter.WriteCall("String.new", 1, ce.componentStack.Count()+1)
+		ce.vmWriter.WritePush(vmwriter.CONSTANT, length)
+		ce.vmWriter.WriteCall("String.new", 1)
 		for _, char := range token.GetStringVal() {
-			ce.vmWriter.WritePush(vmwriter.CONSTANT, int(char), ce.componentStack.Count()+1)
-			ce.vmWriter.WriteCall("String.appendChar", 2, ce.componentStack.Count()+1)
+			ce.vmWriter.WritePush(vmwriter.CONSTANT, int(char))
+			ce.vmWriter.WriteCall("String.appendChar", 2)
 		}
 
 		ce.index++
@@ -51,12 +51,12 @@ func (ce *CompilationEngine) compileTerm() error {
 
 		switch token.GetKeyword() {
 		case token_patterns.TRUE:
-			ce.vmWriter.WritePush(vmwriter.CONSTANT, 0, ce.componentStack.Count()+1)
-			ce.vmWriter.WriteArithmetic(vmwriter.NOT, ce.componentStack.Count()+1)
+			ce.vmWriter.WritePush(vmwriter.CONSTANT, 0)
+			ce.vmWriter.WriteArithmetic(vmwriter.NOT)
 		case token_patterns.FALSE, token_patterns.NULL:
-			ce.vmWriter.WritePush(vmwriter.CONSTANT, 0, ce.componentStack.Count()+1)
+			ce.vmWriter.WritePush(vmwriter.CONSTANT, 0)
 		case token_patterns.THIS:
-			ce.vmWriter.WritePush(vmwriter.POINTER, 0, ce.componentStack.Count()+1)
+			ce.vmWriter.WritePush(vmwriter.POINTER, 0)
 		}
 
 		ce.index++
@@ -78,9 +78,9 @@ func (ce *CompilationEngine) compileTerm() error {
 
 		switch unaryOperation {
 		case "-":
-			ce.vmWriter.WriteArithmetic(vmwriter.NEG, ce.componentStack.Count()+1)
+			ce.vmWriter.WriteArithmetic(vmwriter.NEG)
 		case "~":
-			ce.vmWriter.WriteArithmetic(vmwriter.NOT, ce.componentStack.Count()+1)
+			ce.vmWriter.WriteArithmetic(vmwriter.NOT)
 		}
 
 		return nil
@@ -152,10 +152,10 @@ func (ce *CompilationEngine) compileTerm() error {
 
 		memorySegment := variableKindMemorySegmentMap[ce.symbolTable.KindOf(objectName)]
 		index := ce.symbolTable.IndexOf(objectName)
-		ce.vmWriter.WritePush(memorySegment, index, ce.componentStack.Count()+1)
-		ce.vmWriter.WriteArithmetic(vmwriter.ADD, ce.componentStack.Count()+1)
-		ce.vmWriter.WritePop(vmwriter.POINTER, 1, ce.componentStack.Count()+1)
-		ce.vmWriter.WritePush(vmwriter.THAT, 0, ce.componentStack.Count()+1)
+		ce.vmWriter.WritePush(memorySegment, index)
+		ce.vmWriter.WriteArithmetic(vmwriter.ADD)
+		ce.vmWriter.WritePop(vmwriter.POINTER, 1)
+		ce.vmWriter.WritePush(vmwriter.THAT, 0)
 		ce.index++
 	} else if token.IsSubroutineCall(nextToken) {
 		// subroutine call
@@ -178,8 +178,7 @@ func (ce *CompilationEngine) compileTerm() error {
 
 		memorySegment := variableKindMemorySegmentMap[ce.symbolTable.KindOf(token.GetIdentifier())]
 		ce.vmWriter.WritePush(memorySegment,
-			ce.symbolTable.IndexOf(token.GetIdentifier()),
-			ce.componentStack.Count()+1)
+			ce.symbolTable.IndexOf(token.GetIdentifier()))
 		ce.index++
 	}
 

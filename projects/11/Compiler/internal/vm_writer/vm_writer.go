@@ -33,15 +33,15 @@ const (
 )
 
 type IVMWriter interface {
-	WritePush(segment Segment, index int, indentLevel int)
-	WritePop(segment Segment, index int, indentLevel int)
-	WriteArithmetic(command ArithmeticCommand, indentLevel int)
-	WriteLabel(label string, indentLevel int)
-	WriteGoto(label string, indentLevel int)
-	WriteIf(label string, indentLevel int)
-	WriteCall(name string, nArgs int, indentLevel int)
+	WritePush(segment Segment, index int)
+	WritePop(segment Segment, index int)
+	WriteArithmetic(command ArithmeticCommand)
+	WriteLabel(label string)
+	WriteGoto(label string)
+	WriteIf(label string)
+	WriteCall(name string, nArgs int)
 	WriteFunction(name string, nVars int)
-	WriteReturn(indentLevel int)
+	WriteReturn()
 }
 
 type VMWriter struct {
@@ -52,48 +52,44 @@ func New(w io.Writer) IVMWriter {
 	return &VMWriter{writer: w}
 }
 
-func (w *VMWriter) WritePush(segment Segment, index int, indentLevel int) {
-	w.writeLine(indentLevel, "push %s %d", segment, index)
+func (w *VMWriter) WritePush(segment Segment, index int) {
+	w.writeLine("push %s %d", segment, index)
 }
 
-func (w *VMWriter) WritePop(segment Segment, index int, indentLevel int) {
-	w.writeLine(indentLevel, "pop %s %d", segment, index)
+func (w *VMWriter) WritePop(segment Segment, index int) {
+	w.writeLine("pop %s %d", segment, index)
 }
 
-func (w *VMWriter) WriteArithmetic(command ArithmeticCommand, indentLevel int) {
-	w.writeLine(indentLevel, "%s", command)
+func (w *VMWriter) WriteArithmetic(command ArithmeticCommand) {
+	w.writeLine("%s", command)
 }
 
-func (w *VMWriter) WriteLabel(label string, indentLevel int) {
-	w.writeLine(indentLevel, "label %s", label)
+func (w *VMWriter) WriteLabel(label string) {
+	w.writeLine("label %s", label)
 }
 
-func (w *VMWriter) WriteGoto(label string, indentLevel int) {
-	w.writeLine(indentLevel, "goto %s", label)
+func (w *VMWriter) WriteGoto(label string) {
+	w.writeLine("goto %s", label)
 }
 
-func (w *VMWriter) WriteIf(label string, indentLevel int) {
-	w.writeLine(indentLevel, "if-goto %s", label)
+func (w *VMWriter) WriteIf(label string) {
+	w.writeLine("if-goto %s", label)
 }
 
-func (w *VMWriter) WriteCall(name string, nArgs int, indentLevel int) {
-	w.writeLine(indentLevel, "call %s %d", name, nArgs)
+func (w *VMWriter) WriteCall(name string, nArgs int) {
+	w.writeLine("call %s %d", name, nArgs)
 }
 
 func (w *VMWriter) WriteFunction(name string, nVars int) {
-	w.writeLine(0, "function %s %d", name, nVars)
+	w.writeLine("function %s %d", name, nVars)
 }
 
-func (w *VMWriter) WriteReturn(indentLevel int) {
-	w.writeLine(indentLevel, "return")
+func (w *VMWriter) WriteReturn() {
+	w.writeLine("return")
 }
 
-func (w *VMWriter) writeLine(indentLevel int, format string, a ...interface{}) {
-	indent := ""
-	for i := 0; i < indentLevel; i++ {
-		indent += "  "
-	}
-	_, err := fmt.Fprintf(w.writer, "%s%s\n", indent, fmt.Sprintf(format, a...))
+func (w *VMWriter) writeLine(format string, a ...interface{}) {
+	_, err := fmt.Fprintf(w.writer, "%s\n", fmt.Sprintf(format, a...))
 	if err != nil {
 		panic(err)
 	}

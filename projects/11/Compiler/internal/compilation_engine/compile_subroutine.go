@@ -3,6 +3,7 @@ package compilation_engine
 import (
 	"fmt"
 	"ny/nand2tetris/compiler/internal/component"
+	symboltable "ny/nand2tetris/compiler/internal/symbol_table"
 	"ny/nand2tetris/compiler/internal/token_patterns"
 )
 
@@ -14,6 +15,9 @@ func (ce *CompilationEngine) compileSubroutine() error {
 	}
 
 	ce.symbolTable.Reset()
+	ce.subroutineInfo = subroutineInfo{}
+	ce.labelCounterIf = 0
+	ce.labelCounterWhile = 0
 
 	parentComponent := ce.componentStack.Pop()
 	defer ce.componentStack.Push(parentComponent)
@@ -23,18 +27,26 @@ func (ce *CompilationEngine) compileSubroutine() error {
 
 	// subroutine  (constructor, function, or method)
 	subroutineDecComponent.Children = append(subroutineDecComponent.Children, component.New("keyword", string(token.GetKeyword())))
+	ce.subroutineInfo.functionType = functionType(token.GetKeyword())
+
+	if ce.subroutineInfo.functionType == METHOD {
+		ce.symbolTable.Define("this", ce.className, symboltable.ARG)
+	}
 	ce.index++
 
 	// return type (void or type)
 	token = ce.tokens[ce.index]
 	if token.IsVoid() {
 		subroutineDecComponent.Children = append(subroutineDecComponent.Children, component.New("keyword", string(token_patterns.VOID)))
+		ce.subroutineInfo.returnType = string(token_patterns.VOID)
 		ce.index++
 	} else if token.IsIdentifier() {
 		subroutineDecComponent.Children = append(subroutineDecComponent.Children, component.New("identifier", token.GetValue()))
+		ce.subroutineInfo.returnType = token.GetValue()
 		ce.index++
 	} else if token.IsType() {
 		subroutineDecComponent.Children = append(subroutineDecComponent.Children, component.New("keyword", token.GetValue()))
+		ce.subroutineInfo.returnType = token.GetValue()
 		ce.index++
 	} else {
 		return fmt.Errorf("index %d: expected return type (void or type), got '%s'", ce.index, token.GetValue())
@@ -46,6 +58,7 @@ func (ce *CompilationEngine) compileSubroutine() error {
 		return fmt.Errorf("index %d: expected subroutine name, got '%s'", ce.index, token.GetValue())
 	}
 	subroutineDecComponent.Children = append(subroutineDecComponent.Children, component.NewSubroutineComponent("identifier", token.GetIdentifier()))
+	ce.subroutineInfo.name = token.GetIdentifier()
 	ce.index++
 
 	// '('

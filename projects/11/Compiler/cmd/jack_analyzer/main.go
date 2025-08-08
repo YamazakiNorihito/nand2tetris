@@ -6,6 +6,7 @@ import (
 	"ny/nand2tetris/compiler/internal/compilation_engine"
 	"ny/nand2tetris/compiler/internal/jack_tokenizer"
 	Tokens "ny/nand2tetris/compiler/internal/tokens"
+	vmwriter "ny/nand2tetris/compiler/internal/vm_writer"
 	"os"
 	"path/filepath"
 	"strings"
@@ -32,7 +33,11 @@ func handler(sourcePath string) {
 		outputXmlFile, closeOutputXml := mustCreateFile(strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".xml")
 		defer closeOutputXml()
 
-		compilationEngine, err := compilation_engine.New(tokens, xml.NewEncoder(outputXmlFile))
+		outputVmFile, closeOutputVm := mustCreateFile(strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".vm")
+		defer closeOutputVm()
+
+		vmwriter := vmwriter.New(outputVmFile)
+		compilationEngine, err := compilation_engine.New(tokens, xml.NewEncoder(outputXmlFile), vmwriter)
 		if err != nil {
 			panic(fmt.Errorf("failed to create compilation engine for file %s: %w", filePath, err))
 		}

@@ -45,7 +45,7 @@
               <expressionList>
                 <expression>
                   <term>
-                    <stringConstant>HOW MANY NUMBERS? </stringConstant>
+                    <stringConstant>How many numbers? </stringConstant>
                   </term>
                 </expression>
               </expressionList>
@@ -122,7 +122,7 @@
                   <expressionList>
                     <expression>
                       <term>
-                        <stringConstant>ENTER THE NEXT NUMBER: </stringConstant>
+                        <stringConstant>Enter a number: </stringConstant>
                       </term>
                     </expression>
                   </expressionList>
@@ -131,61 +131,6 @@
               </expression>
               <symbol>;</symbol>
             </letStatement>
-            <letStatement>
-              <keyword>let</keyword>
-              <identifier name="i" category="var" index="2" usage="used">i</identifier>
-              <symbol>=</symbol>
-              <expression>
-                <term>
-                  <identifier name="i" category="var" index="2" usage="used">i</identifier>
-                </term>
-                <symbol>+</symbol>
-                <term>
-                  <integerConstant>1</integerConstant>
-                </term>
-              </expression>
-              <symbol>;</symbol>
-            </letStatement>
-          </statements>
-          <symbol>}</symbol>
-        </whileStatement>
-        <letStatement>
-          <keyword>let</keyword>
-          <identifier name="i" category="var" index="2" usage="used">i</identifier>
-          <symbol>=</symbol>
-          <expression>
-            <term>
-              <integerConstant>0</integerConstant>
-            </term>
-          </expression>
-          <symbol>;</symbol>
-        </letStatement>
-        <letStatement>
-          <keyword>let</keyword>
-          <identifier name="sum" category="var" index="3" usage="used">sum</identifier>
-          <symbol>=</symbol>
-          <expression>
-            <term>
-              <integerConstant>0</integerConstant>
-            </term>
-          </expression>
-          <symbol>;</symbol>
-        </letStatement>
-        <whileStatement>
-          <keyword>while</keyword>
-          <symbol>(</symbol>
-          <expression>
-            <term>
-              <identifier name="i" category="var" index="2" usage="used">i</identifier>
-            </term>
-            <symbol>&lt;</symbol>
-            <term>
-              <identifier name="length" category="var" index="1" usage="used">length</identifier>
-            </term>
-          </expression>
-          <symbol>)</symbol>
-          <symbol>{</symbol>
-          <statements>
             <letStatement>
               <keyword>let</keyword>
               <identifier name="sum" category="var" index="3" usage="used">sum</identifier>
@@ -235,7 +180,7 @@
           <expressionList>
             <expression>
               <term>
-                <stringConstant>THE AVERAGE IS: </stringConstant>
+                <stringConstant>The average is </stringConstant>
               </term>
             </expression>
           </expressionList>
@@ -259,16 +204,6 @@
               </term>
             </expression>
           </expressionList>
-          <symbol>)</symbol>
-          <symbol>;</symbol>
-        </doStatement>
-        <doStatement>
-          <keyword>do</keyword>
-          <identifier>Output</identifier>
-          <symbol>.</symbol>
-          <identifier>println</identifier>
-          <symbol>(</symbol>
-          <expressionList></expressionList>
           <symbol>)</symbol>
           <symbol>;</symbol>
         </doStatement>

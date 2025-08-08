@@ -21,10 +21,15 @@ func (ce *CompilationEngine) compileSubroutineCall() error {
 	parentComponent := ce.componentStack.Pop()
 	defer ce.componentStack.Push(parentComponent)
 
+	callFunctionName := ""
+	instancename := ""
+
 	// identifier
+	var isInstanceCall = false
 	if token.IsObjectMethodCall(nextToken) {
 		if ce.symbolTable.KindOf(token.GetIdentifier()) == symboltable.NONE {
 			parentComponent.Children = append(parentComponent.Children, component.New("identifier", token.GetValue()))
+			callFunctionName = token.GetIdentifier()
 		} else {
 			parentComponent.Children = append(parentComponent.Children,
 				component.NewVariableComponent("identifier",
@@ -32,10 +37,16 @@ func (ce *CompilationEngine) compileSubroutineCall() error {
 					component.Category(ce.symbolTable.KindOf(token.GetIdentifier())),
 					ce.symbolTable.IndexOf(token.GetIdentifier()),
 					component.USED))
+
+			isInstanceCall = true
+			instancename = token.GetIdentifier()
+			callFunctionName = ce.symbolTable.TypeOf(token.GetIdentifier())
 		}
 		ce.index++
 	} else {
 		parentComponent.Children = append(parentComponent.Children, component.New("identifier", token.GetValue()))
+		isInstanceCall = true
+		callFunctionName = token.GetIdentifier()
 		ce.index++
 	}
 
@@ -50,7 +61,21 @@ func (ce *CompilationEngine) compileSubroutineCall() error {
 			return fmt.Errorf("index %d: expected subroutine name after '.', got '%s'", ce.index, token.GetValue())
 		}
 		parentComponent.Children = append(parentComponent.Children, component.New("identifier", token.GetIdentifier()))
+
+		callFunctionName += "." + token.GetIdentifier()
 		ce.index++
+	} else {
+		callFunctionName = ce.className + "." + callFunctionName
+	}
+
+	if isInstanceCall {
+		if instancename == "" {
+			// this.method 呼び出し（例：do draw();）
+			ce.vmWriter.WritePush("pointer", 0, ce.componentStack.Count()+1)
+		} else {
+			// 変数からのメソッド呼び出し（例：square.draw();）
+			ce.vmWriter.WritePush(variableKindMemorySegmentMap[ce.symbolTable.KindOf(instancename)], ce.symbolTable.IndexOf(instancename), ce.componentStack.Count()+1)
+		}
 	}
 
 	// '('
@@ -63,7 +88,7 @@ func (ce *CompilationEngine) compileSubroutineCall() error {
 
 	// expressionList
 	ce.componentStack.Push(parentComponent)
-	_, err := ce.compileExpressionList()
+	nArg, err := ce.compileExpressionList()
 	if err != nil {
 		return err
 	}
@@ -76,6 +101,12 @@ func (ce *CompilationEngine) compileSubroutineCall() error {
 	}
 	parentComponent.Children = append(parentComponent.Children, component.New("symbol", ")"))
 	ce.index++
+
+	if isInstanceCall {
+		ce.vmWriter.WriteCall(callFunctionName, nArg+1, ce.componentStack.Count()+1)
+	} else {
+		ce.vmWriter.WriteCall(callFunctionName, nArg, ce.componentStack.Count()+1)
+	}
 
 	return nil
 }

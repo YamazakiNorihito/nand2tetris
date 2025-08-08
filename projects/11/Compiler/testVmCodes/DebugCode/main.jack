@@ -1,8 +1,0 @@
-
-class Main {
-
-    function void main() {
-        let a = Main.double(2)
-        return;
-    }
-}

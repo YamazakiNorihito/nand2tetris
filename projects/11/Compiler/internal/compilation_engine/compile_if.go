@@ -20,6 +20,9 @@ func (ce *CompilationEngine) compileIf() error {
 	ifStatementComponent.Children = append(ifStatementComponent.Children, component.New("keyword", string(token_patterns.IF)))
 	ce.index++
 
+	ifLabelCounter := ce.labelCounterIf
+	ce.labelCounterIf++
+
 	// '('
 	token = ce.tokens[ce.index]
 	if !token.IsOpenParen() {
@@ -51,7 +54,11 @@ func (ce *CompilationEngine) compileIf() error {
 	ifStatementComponent.Children = append(ifStatementComponent.Children, component.New("symbol", "{"))
 	ce.index++
 
+	ce.vmWriter.WriteIf(fmt.Sprintf("IF_TRUE%d", ifLabelCounter), ce.componentStack.Count()+1)
+	ce.vmWriter.WriteGoto(fmt.Sprintf("IF_FALSE%d", ifLabelCounter), ce.componentStack.Count()+1)
+
 	// statements
+	ce.vmWriter.WriteLabel(fmt.Sprintf("IF_TRUE%d", ifLabelCounter), ce.componentStack.Count()+1)
 	ce.componentStack.Push(ifStatementComponent)
 	if err := ce.compileStatements(); err != nil {
 		return err
@@ -69,6 +76,8 @@ func (ce *CompilationEngine) compileIf() error {
 	// else
 	token = ce.tokens[ce.index]
 	if token.IsElse() {
+		ce.vmWriter.WriteGoto(fmt.Sprintf("IF_END%d", ifLabelCounter), ce.componentStack.Count()+1)
+
 		ifStatementComponent.Children = append(ifStatementComponent.Children, component.New("keyword", string(token_patterns.ELSE)))
 		ce.index++
 
@@ -79,6 +88,8 @@ func (ce *CompilationEngine) compileIf() error {
 		}
 		ifStatementComponent.Children = append(ifStatementComponent.Children, component.New("symbol", "{"))
 		ce.index++
+
+		ce.vmWriter.WriteLabel(fmt.Sprintf("IF_FALSE%d", ifLabelCounter), ce.componentStack.Count()+1)
 
 		// statements
 		ce.componentStack.Push(ifStatementComponent)
@@ -94,6 +105,9 @@ func (ce *CompilationEngine) compileIf() error {
 		}
 		ifStatementComponent.Children = append(ifStatementComponent.Children, component.New("symbol", "}"))
 		ce.index++
+		ce.vmWriter.WriteLabel(fmt.Sprintf("IF_END%d", ifLabelCounter), ce.componentStack.Count()+1)
+	} else {
+		ce.vmWriter.WriteLabel(fmt.Sprintf("IF_FALSE%d", ifLabelCounter), ce.componentStack.Count()+1)
 	}
 	return nil
 }

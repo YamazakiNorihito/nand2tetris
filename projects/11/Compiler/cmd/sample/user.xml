@@ -1,0 +1,10 @@
+<user>
+  <id>1</id>
+  <name>Taro</name>
+  <email>taro@example.com</email>
+  <address>
+    <street>1-2-3 Example St.</street>
+    <city>Tokyo</city>
+    <zip>123-4567</zip>
+  </address>
+</user>

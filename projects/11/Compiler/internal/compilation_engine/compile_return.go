@@ -45,9 +45,8 @@ func (ce *CompilationEngine) compileReturn() error {
 }
 
 func (ce *CompilationEngine) writeVMReturn() {
-	indentLevel := ce.componentStack.Count() + 1
 	if ce.subroutineInfo.returnType == string(token_patterns.VOID) {
-		ce.vmWriter.WritePush(vmwriter.CONSTANT, 0, indentLevel)
+		ce.vmWriter.WritePush(vmwriter.CONSTANT, 0)
 	}
-	ce.vmWriter.WriteReturn(indentLevel)
+	ce.vmWriter.WriteReturn()
 }

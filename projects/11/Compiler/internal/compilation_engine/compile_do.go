@@ -38,7 +38,7 @@ func (ce *CompilationEngine) compileDo() error {
 	doStatementComponent.Children = append(doStatementComponent.Children, component.New("symbol", ";"))
 	ce.index++
 
-	ce.vmWriter.WritePop(vmwriter.TEMP, 0, ce.componentStack.Count()+1)
+	ce.vmWriter.WritePop(vmwriter.TEMP, 0)
 
 	return nil
 }

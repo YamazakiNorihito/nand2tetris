@@ -74,7 +74,7 @@ function Square.incSize 0
   and
   if-goto IF_TRUE0
   goto IF_FALSE0
-  label IF_TRUE0
+label IF_TRUE0
   push pointer 0
   call Square.erase 1
   pop temp 0
@@ -85,7 +85,7 @@ function Square.incSize 0
   push pointer 0
   call Square.draw 1
   pop temp 0
-  label IF_FALSE0
+label IF_FALSE0
   push constant 0
   return
 function Square.decSize 0
@@ -96,7 +96,7 @@ function Square.decSize 0
   gt
   if-goto IF_TRUE0
   goto IF_FALSE0
-  label IF_TRUE0
+label IF_TRUE0
   push pointer 0
   call Square.erase 1
   pop temp 0
@@ -107,7 +107,7 @@ function Square.decSize 0
   push pointer 0
   call Square.draw 1
   pop temp 0
-  label IF_FALSE0
+label IF_FALSE0
   push constant 0
   return
 function Square.moveUp 0
@@ -118,7 +118,7 @@ function Square.moveUp 0
   gt
   if-goto IF_TRUE0
   goto IF_FALSE0
-  label IF_TRUE0
+label IF_TRUE0
   push constant 0
   call Screen.setColor 1
   pop temp 0
@@ -154,7 +154,7 @@ function Square.moveUp 0
   add
   call Screen.drawRectangle 4
   pop temp 0
-  label IF_FALSE0
+label IF_FALSE0
   push constant 0
   return
 function Square.moveDown 0
@@ -167,7 +167,7 @@ function Square.moveDown 0
   lt
   if-goto IF_TRUE0
   goto IF_FALSE0
-  label IF_TRUE0
+label IF_TRUE0
   push constant 0
   call Screen.setColor 1
   pop temp 0
@@ -203,7 +203,7 @@ function Square.moveDown 0
   add
   call Screen.drawRectangle 4
   pop temp 0
-  label IF_FALSE0
+label IF_FALSE0
   push constant 0
   return
 function Square.moveLeft 0
@@ -214,7 +214,7 @@ function Square.moveLeft 0
   gt
   if-goto IF_TRUE0
   goto IF_FALSE0
-  label IF_TRUE0
+label IF_TRUE0
   push constant 0
   call Screen.setColor 1
   pop temp 0
@@ -250,7 +250,7 @@ function Square.moveLeft 0
   add
   call Screen.drawRectangle 4
   pop temp 0
-  label IF_FALSE0
+label IF_FALSE0
   push constant 0
   return
 function Square.moveRight 0
@@ -263,7 +263,7 @@ function Square.moveRight 0
   lt
   if-goto IF_TRUE0
   goto IF_FALSE0
-  label IF_TRUE0
+label IF_TRUE0
   push constant 0
   call Screen.setColor 1
   pop temp 0
@@ -299,6 +299,6 @@ function Square.moveRight 0
   add
   call Screen.drawRectangle 4
   pop temp 0
-  label IF_FALSE0
+label IF_FALSE0
   push constant 0
   return

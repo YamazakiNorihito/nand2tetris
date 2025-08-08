@@ -75,8 +75,8 @@ func (ce *CompilationEngine) compileLet() error {
 
 		memorySegment := variableKindMemorySegmentMap[ce.symbolTable.KindOf(objectName)]
 		index := ce.symbolTable.IndexOf(objectName)
-		ce.vmWriter.WritePush(memorySegment, index, ce.componentStack.Count()+1) // push base address of array
-		ce.vmWriter.WriteArithmetic(vmwriter.ADD, ce.componentStack.Count()+1)   // add index: a + i
+		ce.vmWriter.WritePush(memorySegment, index) // push base address of array
+		ce.vmWriter.WriteArithmetic(vmwriter.ADD)   // add index: a + i
 	} else {
 		letStatementComponent.Children = append(letStatementComponent.Children,
 			component.NewVariableComponent("identifier",
@@ -113,12 +113,12 @@ func (ce *CompilationEngine) compileLet() error {
 
 	memorySegmentType := variableKindMemorySegmentMap[ce.symbolTable.KindOf(letName)]
 	if isArray {
-		ce.vmWriter.WritePop(vmwriter.TEMP, 0, ce.componentStack.Count()+1)
-		ce.vmWriter.WritePop(vmwriter.POINTER, 1, ce.componentStack.Count()+1)
-		ce.vmWriter.WritePush(vmwriter.TEMP, 0, ce.componentStack.Count()+1)
-		ce.vmWriter.WritePop(vmwriter.THAT, 0, ce.componentStack.Count()+1)
+		ce.vmWriter.WritePop(vmwriter.TEMP, 0)
+		ce.vmWriter.WritePop(vmwriter.POINTER, 1)
+		ce.vmWriter.WritePush(vmwriter.TEMP, 0)
+		ce.vmWriter.WritePop(vmwriter.THAT, 0)
 	} else {
-		ce.vmWriter.WritePop(memorySegmentType, ce.symbolTable.IndexOf(letName), ce.componentStack.Count()+1)
+		ce.vmWriter.WritePop(memorySegmentType, ce.symbolTable.IndexOf(letName))
 	}
 
 	return nil

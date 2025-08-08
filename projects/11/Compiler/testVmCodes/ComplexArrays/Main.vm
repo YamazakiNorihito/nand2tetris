@@ -407,7 +407,7 @@ function Main.main 3
   eq
   if-goto IF_TRUE0
   goto IF_FALSE0
-  label IF_TRUE0
+label IF_TRUE0
   push local 0
   push constant 10
   call Main.fill 2
@@ -464,7 +464,7 @@ function Main.main 3
   pop pointer 1
   push temp 0
   pop that 0
-  label IF_FALSE0
+label IF_FALSE0
   push constant 44
   call String.new 1
   push constant 84
@@ -677,7 +677,7 @@ function Main.double 0
   call Math.multiply 2
   return
 function Main.fill 0
-  label WHILE_EXP0
+label WHILE_EXP0
   push argument 1
   push constant 0
   gt
@@ -697,6 +697,6 @@ function Main.fill 0
   push temp 0
   pop that 0
   goto WHILE_EXP0
-  label WHILE_END0
+label WHILE_END0
   push constant 0
   return

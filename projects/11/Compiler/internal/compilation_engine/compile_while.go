@@ -26,7 +26,7 @@ func (ce *CompilationEngine) compileWhile() error {
 	labelCounterWhile := ce.labelCounterWhile
 	ce.labelCounterWhile++
 
-	ce.vmWriter.WriteLabel(fmt.Sprintf("WHILE_EXP%d", labelCounterWhile), ce.componentStack.Count()+1)
+	ce.vmWriter.WriteLabel(fmt.Sprintf("WHILE_EXP%d", labelCounterWhile))
 
 	// '('
 	token = ce.tokens[ce.index]
@@ -59,8 +59,8 @@ func (ce *CompilationEngine) compileWhile() error {
 	whileStatementComponent.Children = append(whileStatementComponent.Children, component.New("symbol", "{"))
 	ce.index++
 
-	ce.vmWriter.WriteArithmetic(vmwriter.NOT, ce.componentStack.Count()+1)
-	ce.vmWriter.WriteIf(fmt.Sprintf("WHILE_END%d", labelCounterWhile), ce.componentStack.Count()+1)
+	ce.vmWriter.WriteArithmetic(vmwriter.NOT)
+	ce.vmWriter.WriteIf(fmt.Sprintf("WHILE_END%d", labelCounterWhile))
 
 	// statements
 	ce.componentStack.Push(whileStatementComponent)
@@ -69,7 +69,7 @@ func (ce *CompilationEngine) compileWhile() error {
 	}
 	whileStatementComponent = ce.componentStack.Pop()
 
-	ce.vmWriter.WriteGoto(fmt.Sprintf("WHILE_EXP%d", labelCounterWhile), ce.componentStack.Count()+1)
+	ce.vmWriter.WriteGoto(fmt.Sprintf("WHILE_EXP%d", labelCounterWhile))
 
 	// '}'
 	token = ce.tokens[ce.index]
@@ -79,7 +79,7 @@ func (ce *CompilationEngine) compileWhile() error {
 	whileStatementComponent.Children = append(whileStatementComponent.Children, component.New("symbol", "}"))
 	ce.index++
 
-	ce.vmWriter.WriteLabel(fmt.Sprintf("WHILE_END%d", labelCounterWhile), ce.componentStack.Count()+1)
+	ce.vmWriter.WriteLabel(fmt.Sprintf("WHILE_END%d", labelCounterWhile))
 
 	return nil
 }

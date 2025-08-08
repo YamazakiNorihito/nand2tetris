@@ -54,11 +54,11 @@ func (ce *CompilationEngine) compileIf() error {
 	ifStatementComponent.Children = append(ifStatementComponent.Children, component.New("symbol", "{"))
 	ce.index++
 
-	ce.vmWriter.WriteIf(fmt.Sprintf("IF_TRUE%d", ifLabelCounter), ce.componentStack.Count()+1)
-	ce.vmWriter.WriteGoto(fmt.Sprintf("IF_FALSE%d", ifLabelCounter), ce.componentStack.Count()+1)
+	ce.vmWriter.WriteIf(fmt.Sprintf("IF_TRUE%d", ifLabelCounter))
+	ce.vmWriter.WriteGoto(fmt.Sprintf("IF_FALSE%d", ifLabelCounter))
 
 	// statements
-	ce.vmWriter.WriteLabel(fmt.Sprintf("IF_TRUE%d", ifLabelCounter), ce.componentStack.Count()+1)
+	ce.vmWriter.WriteLabel(fmt.Sprintf("IF_TRUE%d", ifLabelCounter))
 	ce.componentStack.Push(ifStatementComponent)
 	if err := ce.compileStatements(); err != nil {
 		return err
@@ -76,7 +76,7 @@ func (ce *CompilationEngine) compileIf() error {
 	// else
 	token = ce.tokens[ce.index]
 	if token.IsElse() {
-		ce.vmWriter.WriteGoto(fmt.Sprintf("IF_END%d", ifLabelCounter), ce.componentStack.Count()+1)
+		ce.vmWriter.WriteGoto(fmt.Sprintf("IF_END%d", ifLabelCounter))
 
 		ifStatementComponent.Children = append(ifStatementComponent.Children, component.New("keyword", string(token_patterns.ELSE)))
 		ce.index++
@@ -89,7 +89,7 @@ func (ce *CompilationEngine) compileIf() error {
 		ifStatementComponent.Children = append(ifStatementComponent.Children, component.New("symbol", "{"))
 		ce.index++
 
-		ce.vmWriter.WriteLabel(fmt.Sprintf("IF_FALSE%d", ifLabelCounter), ce.componentStack.Count()+1)
+		ce.vmWriter.WriteLabel(fmt.Sprintf("IF_FALSE%d", ifLabelCounter))
 
 		// statements
 		ce.componentStack.Push(ifStatementComponent)
@@ -105,9 +105,9 @@ func (ce *CompilationEngine) compileIf() error {
 		}
 		ifStatementComponent.Children = append(ifStatementComponent.Children, component.New("symbol", "}"))
 		ce.index++
-		ce.vmWriter.WriteLabel(fmt.Sprintf("IF_END%d", ifLabelCounter), ce.componentStack.Count()+1)
+		ce.vmWriter.WriteLabel(fmt.Sprintf("IF_END%d", ifLabelCounter))
 	} else {
-		ce.vmWriter.WriteLabel(fmt.Sprintf("IF_FALSE%d", ifLabelCounter), ce.componentStack.Count()+1)
+		ce.vmWriter.WriteLabel(fmt.Sprintf("IF_FALSE%d", ifLabelCounter))
 	}
 	return nil
 }

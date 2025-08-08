@@ -46,11 +46,11 @@ func (ce *CompilationEngine) compileExpression() error {
 
 		command := arithmeticCommandOperandMap[op]
 		if op == "*" {
-			ce.vmWriter.WriteCall("Math.multiply", 2, ce.componentStack.Count()+1)
+			ce.vmWriter.WriteCall("Math.multiply", 2)
 		} else if op == "/" {
-			ce.vmWriter.WriteCall("Math.divide", 2, ce.componentStack.Count()+1)
+			ce.vmWriter.WriteCall("Math.divide", 2)
 		} else if command != "" {
-			ce.vmWriter.WriteArithmetic(command, ce.componentStack.Count()+1)
+			ce.vmWriter.WriteArithmetic(command)
 		}
 
 		// Operator

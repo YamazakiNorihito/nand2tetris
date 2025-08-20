@@ -1,0 +1,114 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Memory.jack
+/**
+ * This library provides two services: direct access to the computer's main
+ * memory (RAM), and allocation and recycling of memory blocks. The Hack RAM
+ * consists of 32,768 words, each holding a 16-bit binary number.
+ */ 
+class Memory {
+
+    static int HEAP_BASE;
+    static int HEADER_WORDS;
+    static int HEAP_LIMIT;
+
+
+    static Array ram;
+
+    // freeHead は「freeListの先頭ブロックのアドレス」を保持する。
+    // 実際のリスト全体は、各ブロックの先頭ワードに格納された「次ブロックのアドレス」により
+    // 連結リストとして表現される。freeHead はその入り口にすぎない。
+    static int freeHead;
+
+    /** Initializes the class. */
+    function void init() {
+
+        let HEAP_BASE = 2048;
+        let HEADER_WORDS = 2;
+        let HEAP_LIMIT = 16384;
+
+        let ram = 0;
+        let freeHead = HEAP_BASE;
+
+        // nextSegment
+        let ram[freeHead] = -1;
+        // size
+        let ram[freeHead + 1] = HEAP_LIMIT - HEAP_BASE;
+
+        return;
+    }
+
+    /** Returns the RAM value at the given address. */
+    function int peek(int address) {
+        return ram[address];
+    }
+
+    /** Sets the RAM value at the given address to the given value. */
+    function void poke(int address, int value) {
+        let ram[address] = value;
+        return;
+    }
+
+    /** Finds an available RAM block of the given size and returns
+     *  a reference to its base address. */
+    function Array alloc(int size) {
+        var Array allocatedAddress;
+        var int currentSegment, previousSegment, nextSegment, segmentSize, needWords, splitHeaderAddress;
+
+        let allocatedAddress = null;
+        let currentSegment = freeHead;
+        let previousSegment = -1;
+        let needWords = size + HEADER_WORDS;
+
+        while (~(currentSegment = -1)) {
+            let nextSegment = ram[currentSegment];
+            let segmentSize = ram[currentSegment + 1];
+
+            if (segmentSize = needWords) {
+                let allocatedAddress = currentSegment + HEADER_WORDS;
+                let ram[currentSegment] = -1;
+                let ram[currentSegment + 1] = needWords;
+
+                if (previousSegment = -1) {
+                    let freeHead = nextSegment;
+                } else {
+                    let ram[previousSegment] = nextSegment;
+                }
+                return allocatedAddress;
+            }
+
+            if (segmentSize > needWords) {
+                let allocatedAddress = currentSegment + HEADER_WORDS;
+                let ram[currentSegment] = -1;
+                let ram[currentSegment + 1] = needWords;
+
+                let splitHeaderAddress = currentSegment + needWords;
+                let ram[splitHeaderAddress] = nextSegment;
+                let ram[splitHeaderAddress + 1] = segmentSize - needWords;
+
+                if (previousSegment = -1) {
+                    let freeHead = splitHeaderAddress;
+                } else {
+                    let ram[previousSegment] = splitHeaderAddress;
+                }
+                return allocatedAddress;
+            }
+
+            let previousSegment = currentSegment;
+            let currentSegment = nextSegment;
+        }
+        return allocatedAddress;
+    }
+
+    /** De-allocates the given object (cast as an array) by making
+     *  it available for future allocations. */
+    function void deAlloc(Array o) {
+        var int segmentHeader;
+        let segmentHeader = o - HEADER_WORDS;
+
+        let ram[segmentHeader] = freeHead; // next
+        let freeHead = segmentHeader;
+        return;
+    }    
+}

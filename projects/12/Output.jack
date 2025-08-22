@@ -16,10 +16,24 @@
 class Output {
 
     // Character map for displaying characters
-    static Array charMaps; 
+    static Array charMaps;
+
+    static int cursorRow,cursorCol;              // 0..22 rows, 0..63 cols
+    static int CELL_W, CELL_H, MAX_COLS, MAX_ROWS, GLYPH_W;
 
     /** Initializes the screen, and locates the cursor at the screen's top-left. */
     function void init() {
+        let CELL_W = 8;
+        let CELL_H = 11;
+        let MAX_COLS = 63;
+        let MAX_ROWS = 22;
+        let GLYPH_W = 6; // 左右1ピクセルずつは“文字間の余白”を除いた１文字の幅
+
+        let cursorRow = 0;
+        let cursorCol = 0;
+
+        do Output.initMap();
+        return;
     }
 
     // Initializes the character map array
@@ -70,7 +84,7 @@ class Output {
         do Output.create(64,30,51,51,59,59,59,27,3,30,0,0);  // @
         do Output.create(63,30,51,51,24,12,12,0,12,12,0,0);  // ?
 
-        do Output.create(65,0,0,0,0,0,0,0,0,0,0,0);          // A ** TO BE FILLED **
+        do Output.create(65,12,30,51,51,63,51,51,51,51,0,0);          // A ** TO BE FILLED **
         do Output.create(66,31,51,51,51,31,51,51,51,31,0,0); // B
         do Output.create(67,28,54,35,3,3,3,35,54,28,0,0);    // C
         do Output.create(68,15,27,51,51,51,51,51,27,15,0,0); // D
@@ -175,28 +189,119 @@ class Output {
     /** Moves the cursor to the j-th column of the i-th row,
      *  and erases the character displayed there. */
     function void moveCursor(int i, int j) {
+        var int x1, y1, x2, y2;
+
+        if (j < 0) { let j = 0; }
+        if (j > MAX_COLS) { 
+            let j = 0;
+            let i = i + 1; 
+        }
+        if (i < 0) { let i = 0; }
+        if (i > MAX_ROWS) { let i = 0; }
+
+        let cursorRow = i;
+        let cursorCol = j;
+        
+        let x1 = cursorCol * CELL_W;
+        let y1 = cursorRow * CELL_H;
+        let x2 = x1 + (CELL_W - 1);
+        let y2 = y1 + (CELL_H - 1);
+
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x1, y1, x2, y2);
+        return;
     }
 
     /** Displays the given character at the cursor location,
      *  and advances the cursor one column forward. */
     function void printChar(char c) {
+        var Array map;
+
+        if (c = String.newLine()) {
+            do Output.println();
+            return;
+        }
+        if (c = String.backSpace()) {
+            do Output.backSpace();
+            return;
+        }
+
+        do Output._printChar(c);
+
+        do Output.moveCursor(cursorRow, cursorCol + 1);
+        return;
+    }
+    
+    function void _printChar(char c) {
+        var Array map;
+        var int i, j, tmp, rowBits, lastBit;
+
+        let map = Output.getMap(c);
+
+        do Screen.setColor(true);
+        let i = 0;
+        while(i < CELL_H) {
+            let j = 0;
+            let rowBits = map[i];
+            let tmp = rowBits;
+            // Draw 6-bit glyph centered within 8-pixel cell (1px margins)
+            while(j < GLYPH_W) {
+                let lastBit = tmp & 1;
+                if (lastBit = 1) {
+                    do Screen.drawPixel((cursorCol * CELL_W) + 1 + j, (cursorRow * CELL_H) + i);
+                }
+                let tmp = Math.divide(tmp, 2);
+                let j = j + 1;
+            }
+            let i = i + 1;
+        }
+
+        return;
     }
 
     /** displays the given string starting at the cursor location,
      *  and advances the cursor appropriately. */
     function void printString(String s) {
+        var int i, n;
+        let n = s.length();
+        let i = 0;
+        while (i < n) {
+            do Output.printChar(s.charAt(i));
+            let i = i + 1;
+        }
+        return;
     }
 
     /** Displays the given integer starting at the cursor location,
      *  and advances the cursor appropriately. */
     function void printInt(int i) {
+        var String s;
+        // 6 桁あれば -32768 まで入る（Hack の int は 16bit = -32768～32767）
+        let s = String.new(6);
+
+        do s.setInt(i);
+        do Output.printString(s);
+
+        do s.dispose();
+        return;
     }
 
     /** Advances the cursor to the beginning of the next line. */
     function void println() {
+        if(cursorRow = MAX_ROWS) {
+            do Output.moveCursor(0, 0);
+        }
+        else {
+            do Output.moveCursor(cursorRow + 1, 0);
+        }
+        return;
     }
 
     /** Moves the cursor one column back. */
     function void backSpace() {
+        if(cursorCol > 0) {
+        do Output.moveCursor(cursorRow, cursorCol - 1);
+        }
+        return;
     }
 }

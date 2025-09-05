@@ -63,9 +63,8 @@ CHIP CPU {
 
     // Does The ARegister load?
     Or(a=instructionIsA , b=controlLoadAFromC , out=aRegisterLoad );
-    // Which ARegister Value from A or C
-    Mux16(a=instruction, b=aluOut, sel=controlLoadAFromC, out=aRegisterInputC);
-    Mux16(a=aRegisterInputC, b=instruction, sel=instructionIsA, out=aRegisterInputFinal);
+    // Select ARegister input from ALU output or instruction
+    Mux16(a=aluOut, b=instruction, sel=instructionIsA, out=aRegisterInputFinal);
     ARegister(in=aRegisterInputFinal, load=aRegisterLoad, out[0..14]=addressM, out=aRegisterOut);
 
     And(a=instruction[15], b=instruction[4], out=controlLoadD);
